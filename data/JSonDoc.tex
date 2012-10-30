@@ -1,0 +1,254 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc} 	
+\usepackage[english, russian, ukrainian]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+% defining rules to highlighting JavaScript
+\usepackage{listings}
+\usepackage{color}
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+% define support for the Javascript language, also there included the keywords that show up in code most frequently
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+% define the style for the newly defined language. This also belongs in the preamble of your LaTeX file.
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+\begin{document}
+    \section{Data flow}
+    \subsection{Database}
+    \includegraphics[width=\textwidth]{dbStructure.png}
+    \subsubsection{Basic information}
+
+    Current project has a pretty complicated database structure, which is supposed by class of the information it designed for. Let's briefly overview its structure and comment some mostly important things which could impress you with its ``first view'' irrationality.
+
+    \begin{itemize}            
+        \item \textit{Satellites} -- basic information about satellite projects. It's also works for measurement projects which have no satellites but still support us with helpful information, title -- unique description.
+        \item \textit{Devices} -- basic information about devices, which placed on a board of satellites. Each device has a few channels of measurements.    
+        \item \textit{Channels} -- describes a measurements channels of existed device. Each channel of device emit data of same type, characteristic and parameters. For example, if our channel measure a spectrum it means it always should be ``HF'' or ``LF'' but not both. 
+        \item \textit{Sessions} -- contains measuring sessions. 
+        \item \textit{Session options} -- should contain some specific information about session. It could be some supporting information which given by satellite project.
+    \end{itemize}
+
+    As you see there is many to many relation. This leads to:
+    \begin{enumerate}
+        \item one channel could be in a few sessions. And to be honest it has logical background, cause channel is a kind of stream of data which could be divided into time-intervals which represents by sessions.
+        \item one session could be shared by a few channels, because those channels could stream in a same time.
+    \end{enumerate}
+
+    \begin{itemize}
+        \item \textbf{Толик, тут нужно написать про заявки и привести несколько примеров организации добавления этих заявок, зачем они нужны, и т.д. :)}
+        \item \textbf{ну так напишіть =)}
+    \end{itemize}
+    
+    \subsubsection{User immutable tables}
+    \label{sec:immutable_tables}
+    There a tables which could be edited only by administrative team and accessible for other users in \textit{read-only} mode. There a list this tables:
+    
+    \textit{satellites, devices, channels, parameters, units}
+    
+    \subsubsection{User mutable tables}
+    Tables which could be filled with user information via pulling \texttt{json}-file:
+    
+    \textit{sessions, sessions{\_}options, measurement{\_}points, measurements}
+
+    \section{\texttt{JSON} protocol}
+    Detailed information about \texttt{json} format you can read in
+\href{http://en.wikipedia.org/wiki/JSON}{wikipedia}
+and go deeper into specification on
+\href{http://www.json.org/}{official web-site}
+. But mission of this document is to introduce our work format of \texttt{json}-files. It requires light understanding of \texttt{json}.
+    
+    \subsection{Data writing procedure}
+    Any type of data represented in this database should be connected to specific satellite, device and parameter, but it could be released from session and channel. This specific appears because we also need to have some non-satellite data in this database like $K_p$, $D_{sp}$, $A_p$ and $IGRF$ or second level data (processed data).
+
+    \subsection{Adding sessions}
+    
+    \subsection{Reconnect data with session}
+    
+    \subsection{Adding data}
+    Any data measurements should be connected with measurement points which describes by 4-dimensional point in time-space space.
+    
+    \subsection{Measurement point}
+Each measurement point is like an anchor in a space-time where you connect measurements as a values which was taken in that exact place and moment. That's why we suggest to use variables familiar to us, you might be interested in a several links about them:
+\href{http://en.wikipedia.org/wiki/Universal_Time}{UT}, 
+\href{http://en.wikipedia.org/wiki/Latitude}{latitude}, 
+\href{http://en.wikipedia.org/wiki/Longitude}{longitude}, 
+\href{http://en.wikipedia.org/wiki/Altitude}{altitude}.
+
+\medskip
+\begin{lstlisting}[caption=Measurement point example]
+"measurement_points": [
+    {
+        "time": 234345563.6767, // UT
+        "latitude": 45.45,      // Optional field for a while
+        "longitude": 56.56,     // Optional field for a while
+        "altitude": 3.44,       // Optional field for a while
+    },
+    {...}
+]
+\end{lstlisting}
+    $\{...\}$ -- means that we can add a few more points in there to push some sequence.
+
+    \subsection{Measurement}
+    Then you have measurement points you can attach data measured there. But every data should be supported by some additional information:
+    \begin{description}
+        \item[marker] -- describes level of data processing, which starts from $0$, where $0$ is unprocessed ``still'' data
+        \item[measurement] -- exact measured value we are craving
+        \item[rError] -- right side error, length of right side of estimation interval
+        \item[lError] -- left side error, length of left side of estimation interval
+    \end{description}
+\medskip
+\begin{lstlisting}[caption=Measurement example]
+{
+    "scope": {
+        "parameters": "current",
+    }
+    "measurements": [
+        {
+            // <INT type> describes data level marker, 
+            // default is 0 - which means source %data
+            "marker": 0, 
+
+            // <BLOB type> contains exect measurement 
+            "measurement": "smthn", 
+
+            // <BLOB type> contains right error
+            // Optional field for a %while            
+            "rError": "r smthn", 
+
+            // <BLOB type> contains
+            // Optional field for a %while
+            "lError": "l smthn", 
+        },
+        {...}
+    ]
+}
+\end{lstlisting}
+
+    \subsection{Session free flag}
+    During measurements insertion session relation would be defined automatically, but here could be case when some measurement have no session which it belongs to. To work out this issue exists the way represented here.
+    
+\texttt{allowSessionFree} -- allows you to add session free points, which could be reconnected later with adding session information or stay session free for ever.
+
+%[caption=Declaring the flag to allow insertion of measurement points doesn't attached to any session]
+\begin{lstlisting}
+   "allowSessionFree": False // Default is False
+\end{lstlisting}
+
+Default value is \texttt{False} which means that points without session information couldn't be inserted into database and would throw an exception:
+
+\begin{lstlisting}[caption=Example of exception]
+    "sessionFreeException": {
+        "message": "Something about how smart it is to try insert data without any session",
+        "data": [
+            {
+                "measurement_point": {...}
+                "measurement": {...}
+            }
+        ]
+    }
+\end{lstlisting}
+
+There present all information about points which no session, and data belongs to them.
+
+    \subsection{Scope parameter}
+    
+Could be place everywhere and changes key-parameters inside this scope. As key parameters could be the titles of objects from {immutable tables}~(\ref{sec:immutable_tables}). This thing should have next statement:
+
+\begin{lstlisting}
+    "immutable_table": "title_of_value"
+\end{lstlisting}
+
+There is:
+\begin{description}
+    \item[\texttt{immutable{\_}table}] -- name of immutable table which parameter you need to change in a scope
+    \item[\texttt{title{\_}of{\_}value}] -- value of title field from this table
+    
+    Let's take a look how it should be in a work:
+\end{description}
+
+\begin{lstlisting}[caption=Scope parameter]
+"scope" : {
+    "satellites": "Variant",
+    "devices": "magnitometer",
+    "channels": "Bz",
+}
+\end{lstlisting}
+
+    \subsection{Complete example}
+    
+    \section{Brutal example}
+\medskip
+\begin{lstlisting}[caption=Brutal example]
+{
+    "scope" : {
+        "satellites": "Variant",
+        "devices": "telemetria",
+        "channels": "Bz",
+    },
+    "measurement_points": [
+        {
+            "time": 234345563.6767,
+            "latitude": 45.45,
+            "longitude": 56.56,
+            "altitude": 3.44,
+        },
+        {
+            "time": 45345563.6767,
+            "latitude": 45.45,
+            "longitude": 56.56,
+            "altitude": 3.44,
+        },
+        {
+            "time": 56745563.6767,
+            "latitude": 45.45,
+            "longitude": 56.56,
+            "altitude": 3.44,
+        },
+    ],
+    "measurements": [
+        {
+            "scope": {
+                "parameters": "current",
+            }
+            "marker": 0, // <INT type> describes data level marker, default is 0 - which means source data
+            "measurement": "smthn", // <BLOB type> contains exect measurement
+            "rError": "r smthn", // <BLOB type> contains right error
+            "lError": "r smthn", // <BLOB type> contains left error
+        },
+        {...}
+    ]
+}
+\end{lstlisting}
+\end{document}

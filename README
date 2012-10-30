@@ -1,0 +1,14 @@
+Minimal required versions. The best case if version would be stable.
+
+Web
+
+1. Apache / 2.2.20
+2. PostgreSQL / 9.1.2
+3. nginx / 1.0.12
+4. PHP / 5.3.6
+
+Dev-tools
+5. git / 1.7.5.4
+6. GNU Midnight Commander / 4.7.0.9
+7. Gearman / 0.28
+8. node / 0.6.10

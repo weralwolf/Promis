@@ -1,0 +1,49 @@
+{
+    "satellite": {
+        "title": "Variant",
+        "session": {
+            "BeginTime": 1234567890,
+            "EndTime": 1300000000,
+            "session_options": {}
+        },
+        "devices": [
+            {
+                "device_name": "Wave Zond 1",
+                "channels": [ 
+                    {
+                        "channel_name": "Bx_hf",
+                        "level": 1,
+                        "parameter": {
+                            "parameter_name": "X-component of magnetic field",
+                            "units": "nT"
+                        },
+                        "data": {
+                            "measurements_point": {
+                                "time": [1234567890, 1234567891, 1234567892],
+                                "longitude": [345, 346, 456],
+                                "latitude": [567, 657, 567]
+                            },
+                            "measurement": [2352.23, 243234.423, 24234.0]
+                        }
+                    },
+                    {
+                        "channel_name": "Jyz_hf",
+                        "level": "1",
+                        "parameter": {
+                            "parameter_name": "YZ-projection of current vector",
+                            "units": "nA"
+                        },
+                        "data": {
+                            "measurements_point": {
+                                "time": [1234567890, 1234567891, 1234567892],
+                                "longitude": [345, 346, 456],
+                                "latitude": [567, 657, 567]
+                            },
+                            "measurement": [2352.23, 243234.423, 24234.0]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

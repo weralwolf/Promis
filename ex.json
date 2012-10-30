@@ -1,0 +1,58 @@
+{
+     "sessions": [
+        {
+            "scope" : {
+                "satellites": "Variant",
+                "devices": "telemetria",
+                "channels": "Bz",
+                "sessions": {
+                    "iBegin": 56,
+                    "iEnd": 67,
+                }
+            },
+            "iBegin": 56,
+            "iEnd": 67,
+            "session_options": [
+                {
+                    "title": "ring",
+                    "value": "56"
+                },
+                {
+                    "title": "dollar",
+                    "value": "567"
+                }
+            ],
+            "measurement_points": [
+                {
+                    "time": 234345563.6767,
+                    "latitude": 45.45,
+                    "longitude": 56.56,
+                    "altitude": 3.44,
+                },
+                {
+                    "time": 45345563.6767,
+                    "latitude": 45.45,
+                    "longitude": 56.56,
+                    "altitude": 3.44,
+                },
+                {
+                    "time": 56745563.6767,
+                    "latitude": 45.45,
+                    "longitude": 56.56,
+                    "altitude": 3.44,
+                },
+            ],
+            "measurements": [
+                {
+                    "scope": {
+                        "parameters": "current",
+                    }
+                    "data": [
+                        {...},
+                        {...}
+                    ]
+                }
+            ]
+        }
+     ]
+}
