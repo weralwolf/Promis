@@ -38,3 +38,9 @@ groups = {
 };
 
 use = 'local';
+
+def select(permissions, group=use):
+    if (permissions in ['root', 'contributor']):
+        return groups[group][permissions];
+    else:
+        raise 'DB CONF:: No such `%s` permissions category' % (permissions);

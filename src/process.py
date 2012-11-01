@@ -15,7 +15,7 @@ data = json.load(open('example.json'));
 
 # List of classes which could be used as
 __classes__ = [Satellite, Device, Session, SessionOption];
-__db_conf__ = dbConf.groups[dbConf.use]['contributor'];
+__db_conf__ = dbConf.select('contributor');
 __connection__ = DBConnection(
                               __db_conf__['user'], 
                               __db_conf__['password'], 
