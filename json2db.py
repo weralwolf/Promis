@@ -22,6 +22,43 @@ class DBConnection:
         Session = sessionmaker(bind=self.__engine__);
         return Session();
 
+############### SCOPE ##########################################################
+class Scope(object):
+    _instance = None
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(Scope, cls).__new__(cls, *args, **kwargs);
+        return cls._instance;
+    
+    def __init__(self):
+        self._container_ = {};
+        self._order_ = [];
+
+    @staticmethod
+    def push(sub):
+        self = Scope();
+        self._order_.append(sub.keys());
+        for key in sub.keys():
+            if (not self._container_.has_key(key)):
+                self._container_[key] = [];
+            self._container_[key].append(sub[key]);
+    
+    @staticmethod
+    def pop():
+        self = Scope();
+        if (not len(self._order_)):
+            keys = self._order_.pop();
+            for key in keys:
+                self._container_[key].pop();
+    
+    @staticmethod
+    def state():
+        self = Scope();
+        state = {};
+        for i in self._container_.keys():
+            state[i] = self._container_[key][len(self._container_[key]) - 1];
+    
+
 ############### DB TABLES ######################################################
 
 from sqlalchemy import Column, Integer, String, DECIMAL, DateTime, ForeignKey
@@ -75,7 +112,7 @@ class Satellite(PITable):
 class Device(Base):
     __tablename__ = 'devices';
 
-    id = Column(Integer(unsigned = True), primary_key = True);
+    id = Column(Integer(unsigned=True), primary_key=True);
     title = Column(String);
     description = Column(String);
     frequency = Column(DECIMAL);
@@ -120,9 +157,14 @@ __classes__ = [Satellite, Device, Session, SessionOption];
 
 __connection__ = DBConnection('root', 'littlelover', 'de2', 'localhost', 'mysql');
 
-def process(key, obj, scope, session = None):
+"""
+@param key: element-name of some list or dictionary which should be processed
+@param obj: element-value which should be processed
+"""
+def process(key, obj, session=None):
     __session = None;
     __emitter = False;
+    __new_scope = False;
 
     if (session == None):
         __session = __connection__.session();
@@ -133,19 +175,30 @@ def process(key, obj, scope, session = None):
     if (obj == None) :
         return;
 
+    # process list of objects with same key
     if (type(obj) == type([])):
         for i in obj:
-            process(key, i, scope);
+            process(key, i);
+    # process dictionary of multiple objects 
     elif (type(obj) == type({})):
-        for i in __classes__:
-            if (i.check(key)):
-                _scope, _children = i.inject(obj, scope, __session__);
-                for i in _children.keys():
-                    process(i, i[key], _scope);
-                return;
+        for i in obj.keys():
+            
+            if (i == "scope"):
+              Scope.push(obj);
+              __new_scope = True;
+            
+            for i in __classes__:
+                if (i.check(key)):
+                    _scope, _children = i.inject(obj, scope, __session__);
+                    for i in _children.keys():
+                        process(i, i[key]);
+                    break;
                 
     if (__emitter) :
         __session.save();
         __session.close();
+    
+    if (__new_scope):
+        Scope.pop();
     return;
 

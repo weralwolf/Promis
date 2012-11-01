@@ -7,7 +7,7 @@
                 "channels": "Bz",
                 "sessions": {
                     "iBegin": 56,
-                    "iEnd": 67,
+                    "iEnd": 67
                 }
             },
             "iBegin": 56,
@@ -27,29 +27,72 @@
                     "time": 234345563.6767,
                     "latitude": 45.45,
                     "longitude": 56.56,
-                    "altitude": 3.44,
+                    "altitude": 3.44
                 },
                 {
                     "time": 45345563.6767,
                     "latitude": 45.45,
                     "longitude": 56.56,
-                    "altitude": 3.44,
+                    "altitude": 3.44
                 },
                 {
                     "time": 56745563.6767,
                     "latitude": 45.45,
                     "longitude": 56.56,
-                    "altitude": 3.44,
+                    "altitude": 3.44
                 },
             ],
             "measurements": [
                 {
                     "scope": {
                         "parameters": "current",
-                    }
+                        "paramenters_units": "Amper"
+                    },
                     "data": [
-                        {...},
-                        {...}
+                        {
+                            "marker": 0,
+                            "measurement": 9.99,
+                            "rError": 0.4,
+                            "lError": 0.4
+                        },
+                        {
+                            "marker": 0,
+                            "measurement": 6.99,
+                            "rError": 0.43,
+                            "lError": 0.43
+                        },
+                        {
+                            "marker": 0,
+                            "measurement": 9.79,
+                            "rError": 0.41,
+                            "lError": 0.41
+                        }
+                    ]
+                },
+                {
+                    "scope": {
+                        "parameters": "density",
+                        "paramenters_units": "cm^-3",
+                    },
+                    "data": [
+                        {
+                            "marker": 0,
+                            "measurement": 189873402.99,
+                            "rError": 1230,
+                            "lError": 1230
+                        },
+                        {
+                            "marker": 0,
+                            "measurement": 234998743.45,
+                            "rError": 3435,
+                            "lError": 3435
+                        },
+                        {
+                            "marker": 0,
+                            "measurement": 345345.53,
+                            "rError": 4543,
+                            "lError": 4543
+                        }
                     ]
                 }
             ]
