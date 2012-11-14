@@ -5,11 +5,17 @@ Created on Nov 1, 2012
 '''
 
 from math import floor
+from injectiveTable import InjectiveTable
 
-class Scope(object):
+"""
+    @todo: create methods pushLevel, pullLevel to automate scope work, delegated
+           to next release cause of over-engineering fear
+"""
+
+class Scope(object, InjectiveTable):
 
     # # Instance of Scope
-    _instance = None
+    _instance = None;
     
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -37,26 +43,30 @@ class Scope(object):
         self._level_ = 0;
 
     @staticmethod
-    def push(sub, level):
+    def inject(obj, session, level = -1):
         """
             Push values into scope
-            @param sub: dictionary of key-values needed to create other element
-            @param level: level of current scope amendment  
+            @param obj: dictionary of key-values needed to create other element
+            @param session: should be null, present just respective to parent class
+            @param level: level of current scope amendment   
         """
         self = Scope();
+        
+        if level == -1:
+            level = self._level_ + 1;
         
         if self._level_ < floor(float(level)):
             self._level_ = floor(float(level));
         
         if (self._order_.has_key(level)):
-            self._order_[level].extend(sub.keys());
+            self._order_[level].extend(obj.keys());
         else:
-            self._order_[level] = sub.keys();
+            self._order_[level] = obj.keys();
 
-        for key in sub.keys():
+        for key in obj.keys():
             if (not self._container_.has_key(key)):
                 self._container_[key] = [];
-            self._container_[key].append(sub[key]);
+            self._container_[key].append(obj[key]);
     
     @staticmethod
     def pop(level= -1, justSkim=False):
@@ -107,3 +117,18 @@ class Scope(object):
         state = {};
         for key in self._container_.keys():
             state[key] = self._container_[key][len(self._container_[key]) - 1];
+
+    @staticmethod
+    def level():
+        """
+            @return: current scope level
+        """
+        return Scope()._level_;
+    
+    @staticmethod
+    def check(name):
+        return name in ['scope'];
+    
+    @staticmethod
+    def tableName():
+        return "Scope";
