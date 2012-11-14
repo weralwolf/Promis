@@ -5,7 +5,7 @@ Created on Nov 1, 2012
 '''
 
 from dbConnection import DBConnection
-from dbTables import Session, SessionOption, MeasurementPoint, Measurement
+from mutableTables import Session, SessionOption, MeasurementPoint, Measurement
 from scope import Scope
 import dbConf
 
