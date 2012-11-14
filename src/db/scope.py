@@ -5,7 +5,7 @@ Created on Nov 1, 2012
 '''
 
 from math import floor
-from injectiveTable import InjectiveTable
+from db.__injective_table import InjectiveTable
 
 """
     @todo: create methods pushLevel, pullLevel to automate scope work, delegated

@@ -1,4 +1,4 @@
-src/dbConf.py
+src/conf/*.py
 .project
 .directory
 */.directory
