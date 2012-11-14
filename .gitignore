@@ -1,3 +1,5 @@
 src/dbConf.py
 .project
+.directory
+*/.directory
 */*.pyc
