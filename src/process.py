@@ -4,10 +4,9 @@ Created on Nov 1, 2012
 @author: weralwolf
 '''
 
-from dbConnection import DBConnection
-from mutableTables import Session, SessionOption, MeasurementPoint, Measurement
-from scope import Scope
-import dbConf
+from db.connection import DBConnection
+from db import Session, SessionOption, MeasurementPoint, Measurement, Scope
+import conf.db as dbConf
 
 import json;
 data = json.load(open('example.json'));

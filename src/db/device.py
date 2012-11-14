@@ -4,7 +4,7 @@ Created on Nov 14, 2012
 @author: weralwolf
 '''
 
-from db.__injective_table import Base
+from db.__base import Base
 from sqlalchemy import String, Column, ForeignKey
 from sqlalchemy.orm import relationship
 

@@ -4,13 +4,13 @@ Created on Nov 14, 2012
 @author: weralwolf
 '''
 
-from db.__injective_table import Base
+from db.__base import Base
 from db.__channels_has_sessions import channels_has_sessions
 
 from sqlalchemy import String , Float
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, relation
-    
+
 class Channel(Base):
     """`channels`
     

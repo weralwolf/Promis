@@ -1,5 +1,6 @@
 src/conf/*.py
 .project
+.settings/*
 .directory
 */.directory
 */*.pyc

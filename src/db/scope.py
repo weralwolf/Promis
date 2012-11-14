@@ -12,7 +12,7 @@ from db.__injective_table import InjectiveTable
            to next release cause of over-engineering fear
 """
 
-class Scope(object, InjectiveTable):
+class Scope(InjectiveTable):
 
     # # Instance of Scope
     _instance = None;

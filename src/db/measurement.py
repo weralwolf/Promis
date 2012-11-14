@@ -5,10 +5,11 @@ Created on Nov 1, 2012
 '''
 
 from db.__injective_table import InjectiveTable
+from db.__base import Base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String, LargeBinary
     
-class Measurement(InjectiveTable):
+class Measurement(Base, InjectiveTable):
     """`measurements`
 
     `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,

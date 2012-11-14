@@ -5,10 +5,11 @@ Created on Nov 14, 2012
 '''
 
 from db.__injective_table import InjectiveTable
+from db.__base import Base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, Float   
     
-class MeasurementPoint(InjectiveTable):
+class MeasurementPoint(Base, InjectiveTable):
     """`measurament_points`
 
     `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,

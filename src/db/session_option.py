@@ -5,10 +5,11 @@ Created on Nov 14, 2012
 '''
 
 from db.__injective_table import InjectiveTable
+from db.__base import Base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String
         
-class SessionOption(InjectiveTable):
+class SessionOption(Base, InjectiveTable):
     """`sessions_options`
 
     `id` INT(10) NOT NULL AUTO_INCREMENT ,
