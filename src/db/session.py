@@ -19,8 +19,8 @@ class Session(InjectiveTable):
     __tablename__ = 'sessions';
     
     id = Column(10, Integer(Unsigned=True), primary_key=True);
-    iBegin = Column(DateTime);
-    iEnd = Column(DateTime);
+    interval_begin = Column('iBegin', DateTime);
+    interval_end = Column('iEnd', DateTime);
     
     @staticmethod
     def check(key):
@@ -28,6 +28,7 @@ class Session(InjectiveTable):
     
     @staticmethod
     def inject(obj, session):
+        
         return {};
     
     @staticmethod

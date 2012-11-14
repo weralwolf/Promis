@@ -4,5 +4,20 @@ Created on Nov 14, 2012
 @author: weralwolf
 '''
 
-__all__ = ["channel", "connection", "device", "parameters", "satellite", 
-           "unit", "scope"];
+from db import (channel,
+                connection,
+                device,
+                parameter,
+                satellite,
+                unit,
+                scope);
+
+__all__ = (
+           "channel", 
+           "connection", 
+           "device", 
+           "parameter", 
+           "satellite", 
+           "unit", 
+           "scope"
+           );

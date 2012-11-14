@@ -1,0 +1,40 @@
+=== Devices ===
+MAM
+Mental Activity Meter measure intensity of mental work
+
+MEM
+Mental Efficiency Meter measure ration of effective mental work due to task to integral mental work including field work
+
+IQT
+IQ Tester quickly tests average IQ level
+
+GIM
+Girls Influence Meter measure integral girls influence to a mail part of team
+
+BFM
+Beer Flux Meter measure flux of beer used by mail and female parts of team
+
+
+=== Units / Channels ===
+== MAM ==
+efps - emotional flux per second
+mfps - madness flux per second
+ffps - field flux per second
+
+
+== MEM ==
+tmps - total minds per second
+smps - stupid minds per second
+SMps - smart minds per second
+UMps - useful minds persecond
+umps - useless minds per second
+gmps - genius minds per second
+
+== IQT ==
+iqpp - IQ per person
+
+== GIM ==
+pmsp - PMS percentage
+
+== BFM ==
+lps - littres of beer pes second

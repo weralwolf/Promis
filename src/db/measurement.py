@@ -6,7 +6,7 @@ Created on Nov 1, 2012
 
 from db.__injective_table import InjectiveTable
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, String, DateTime, Float   
+from sqlalchemy import Integer, String, LargeBinary
     
 class Measurement(InjectiveTable):
     """`measurements`
@@ -35,6 +35,16 @@ class Measurement(InjectiveTable):
         REFERENCES `promis`.`channels` (`title` )
     """
     __tablename__ = 'measurements';
+    
+    id = Column(Integer(10, Unsigned=True), primary_key=True);
+    parameters_title = Column(String(255), ForeignKey('parameters.title'));
+    parameters_units_title = Column(String(255), ForeignKey('parameters.units_title'));
+    channels_title = Column(String(255), ForeignKey('channles.title'));
+    measurement_points_id = Column(Integer(10, Unsigned=True), ForeignKey('measurement_points.id'));
+    marker = Column(Integer(10));
+    measurement = Column(LargeBinary);
+    right_error = Column('rError', LargeBinary);
+    left_error = Column('lError', LargeBinary);
     
     @staticmethod
     def check(key):
