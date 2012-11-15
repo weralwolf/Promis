@@ -6,7 +6,7 @@ Created on Nov 14, 2012
 
 from db.__injective_table import InjectiveTable
 from db.scope import Scope
-from db.__channels_has_sessions import channels_has_sessions
+from db.__channels_has_sessions import ChannelHasSessions
 from db.__base import Base
 
 from conf.local import DEBUG
@@ -74,22 +74,25 @@ class Session(Base, InjectiveTable):
         toBePushed = Session(obj['iBegin'], obj['iEnd']);
         
         session.add(toBePushed);
+        session.flush();
         
-#        if DEBUG:
-#            print toBePushed;
+        if DEBUG:
+            print "%s: %s" % (TAG, toBePushed);
         
         # Connect session with channels, there rules we are working with
         # 1. Scope object control correctness of all information it contains
         # 2. Scope translate all information into one usual format
         
-#        scope = Scope.state();
+        scope = Scope.state();
+        
+#        if DEBUG:
+#            print "%s: current scope %s" % (TAG, str(scope));
+#            
 #        if scope.has_key("channels") and len(scope["channels"]):
 #            for channel_title in scope["channels"]:
 #                if DEBUG:
 #                    print "Connection %s with <Channel %s>" % (str(session), channel_title);
-#                connection = channels_has_sessions();
-#                connection.sessions_id = toBePushed.id;
-#                connection.channels_title = channel_title;
+#                connection = ChannelHasSessions(toBePushed.id, channel_title);
 #                session.add(connection);
         
         for i in Session.__defaults__.keys():

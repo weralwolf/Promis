@@ -5,8 +5,11 @@ Created on Nov 14, 2012
 '''
 
 from db.__base import Base
+
+
 from sqlalchemy import Integer, String 
 from sqlalchemy import Table, Column, ForeignKey
+from sqlalchemy.orm import mapper
 
 """`channels_has_sessions`
 
@@ -22,7 +25,14 @@ CONSTRAINT `fk_channels_has_sessions_sessions1`
     FOREIGN KEY (`sessions_id` )
     REFERENCES `promis`.`sessions` (`id` )
 """
+
+class ChannelHasSessions(object):
+    def __init__(self, session, channel):
+        self.channels_title = channel;
+        self.session_id = session;
+
 channels_has_sessions = Table('channels_has_sessions', Base.metadata,
                               Column('channels_title', String(255), ForeignKey('channels.title')),
                               Column('sessions_id', Integer(10, Unsigned=True), ForeignKey('sessions.id'))
                               );
+mapper(ChannelHasSessions, channels_has_sessions);

@@ -4,10 +4,9 @@ Created on Nov 1, 2012
 @author: weralwolf
 '''
 
-from db.__injective_table import InjectiveTable
-
 from conf.local import DEBUG
 
+from common import Singleton
 
 from math import floor
 """
@@ -17,20 +16,15 @@ from math import floor
 
 TAG = "db.scope"
 
-class Scope(InjectiveTable):
+@Singleton
+class _Scope:
 
-    # # Instance of Scope
-    _instance = None;
-    
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Scope, cls).__new__(cls, *args, **kwargs);
-        return cls._instance;
-    
     def __init__(self):
         """
-         Initialize scope. 
+         Initialize scope
         """
+        if DEBUG:
+            print "%s: init()" % (TAG);
         # # Dictionary of lists of values which is ordered by levels.
         # Dictionary keys is a names of scope values
         self._container_ = {};
@@ -47,15 +41,15 @@ class Scope(InjectiveTable):
         # Current highest integer level
         self._level_ = 0;
 
-    @staticmethod
-    def inject(obj, session, level = -1):
+    def inject(self, obj, session, level = -1):
         """
             Push values into scope
             @param obj: dictionary of key-values needed to create other element
             @param session: should be null, present just respective to parent class
             @param level: level of current scope amendment   
         """
-        self = Scope();
+        if DEBUG:
+            print "%s: inject()" % (TAG);
         
         if level == -1:
             level = self._level_ + 1;
@@ -78,8 +72,7 @@ class Scope(InjectiveTable):
         
         return session, {}, {};
     
-    @staticmethod
-    def pop(level= -1, justSkim=False):
+    def pop(self, level= -1, justSkim=False):
         """
             Pop levels before {@link level} and restore the state of scope like 
             there was no such levels
@@ -92,7 +85,10 @@ class Scope(InjectiveTable):
                    special keys to provide database group pushing operation
             
         """
-        self = Scope();
+        
+        if DEBUG:
+            print "%s: pop()" % (TAG);
+        
         if level == -1:
             level = self._level_;
             
@@ -120,28 +116,27 @@ class Scope(InjectiveTable):
                     
             del self._order_[i];
     
-    @staticmethod
-    def state():
+    def state(self):
         """
             Calculate current state of scope from all last added data
             @return: dictionary of key:value
         """
-        self = Scope();
         state = {};
         for key in self._container_.keys():
             state[key] = self._container_[key][len(self._container_[key]) - 1];
+        
+        return state;
 
-    @staticmethod
-    def level():
+    def level(self):
         """
             @return: current scope level
         """
-        return Scope()._level_;
+        return self._level_;
     
-    @staticmethod
-    def check(name):
+    def check(self, name):
         return name in ['scope'];
     
-    @staticmethod
-    def tableName():
+    def tableName(self):
         return "Scope";
+
+Scope = _Scope.Instance();
