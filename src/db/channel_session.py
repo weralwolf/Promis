@@ -155,7 +155,7 @@ class Session(Base, InjectiveTable):
         if DEBUG:
             print "%s: %s" % (TAG, toBePushed);
         
-        Scope.inject({"sessions_id": toBePushed.id}, None, Scope.level() + 0.5);
+        Scope.inject({"sessions_id": toBePushed.id}, None, Scope.level() - 0.5);
         
         for i in Session.__defaults__.keys():
             del obj[i];

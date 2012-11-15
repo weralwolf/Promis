@@ -68,7 +68,14 @@ def process(key, obj, session=None):
         for injector in __injectors__:
             if injector.check(key):
                 if DEBUG:
-                    print "%s: [%s] injector found!" % (TAG, str(key));
+                    print "%s: [%s] injector found `%s`!" % (TAG, str(key), injector.tableName());
+                    
+                if injector.tableName() == "Scope":
+                    if DEBUG:
+                        print "%s: new scope registered" % (TAG);
+                        
+                    __new_scope = True;
+
                 __session, _children, _errors = injector.inject(obj, __session);
                 
                 # If we have any errors we should stop
@@ -78,19 +85,23 @@ def process(key, obj, session=None):
                 
                 if DEBUG:
                     print "%s: [%s] children [%i]" % (TAG, str(key), len(_children));
+                    
                 for child in _children.keys():
                     if DEBUG:
                         print "%s: [%s] child %s" % (TAG, str(key), str(child));
 
                     process(child, _children[child]);
-            
-                if injector.tableName() == "Scope":
-                    __new_scope = True;
 
     if __emitter:
+        if DEBUG:
+            print "%s: commit and close session" % (TAG);
+            
         __session.commit();
         __session.close();
     
     if __new_scope:
+        if DEBUG:
+            print "%s: removing current level scope" % (TAG);
+            
         Scope.pop();
     return {};

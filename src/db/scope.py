@@ -87,7 +87,7 @@ class _Scope:
         """
         
         if DEBUG:
-            print "%s: pop()" % (TAG);
+            print "%s: pop(level=%s, justSkim=%s)[_level_=%i]" % (TAG, str(level), str(justSkim), self._level_);
         
         if level == -1:
             level = self._level_;
@@ -96,25 +96,37 @@ class _Scope:
             currentLevel = float(i);
             
             # Check common condition for any kind of pop operation
-            if currentLevel <= self._level_:
+            if DEBUG:
+                print "%s: comparing levels %f < %i" % (TAG, currentLevel, level);
+                
+            if currentLevel <= level:
                 continue;
             
-            # Check skim-kind condition 
-            if justSkim and floor(currentLevel) == self._level_:
+            # Check skim-kind condition
+            if DEBUG:
+                print "%s: comparing skim-levels %f == %i" % (TAG, floor(currentLevel), level);
+            if justSkim and floor(currentLevel) == level:
                 continue;
             
             # Level which should be removed from scope
+            if DEBUG:
+                print "%s: level %i going to be removed" % (TAG, i);
+
             removable = self._order_[i];
             
-            if not len(removable):
-                keys = removable.pop();
-                for key in keys:
+            if DEBUG:
+                print "%s: removable - %s" % (TAG, str(removable));
+            
+            if len(removable):
+                for key in removable:
                     if DEBUG:
-                        print "%s: - [level: %i] %s" % (TAG, self._level_, str(key));
-                    self._container_[key].pop();
+                        print "%s: - [level: %i] %s" % (TAG, level, str(key));
+                    self._container_[str(key)].pop();
                 
                     
             del self._order_[i];
+            
+            self._level_ = level;
     
     def state(self):
         """
@@ -122,8 +134,10 @@ class _Scope:
             @return: dictionary of key:value
         """
         state = {};
-        for key in self._container_.keys():
-            state[key] = self._container_[key][len(self._container_[key]) - 1];
+        
+        if len(self._order_):
+            for key in self._container_.keys():
+                state[key] = self._container_[key][len(self._container_[key]) - 1];
         
         return state;
 
