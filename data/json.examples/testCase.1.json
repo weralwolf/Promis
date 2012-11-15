@@ -1,0 +1,13 @@
+{
+    "scope" : {
+        "satellites": "ww-freak",
+        "devices": "MAM",
+        "channels": ["ffps"]
+    },
+     "sessions": [
+        {
+            "iBegin": "2012-09-10 10:04:03",
+            "iEnd": "2012-10-16 23:07:06"
+        }
+     ]
+}

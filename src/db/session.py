@@ -8,13 +8,19 @@ from db.__injective_table import InjectiveTable
 from db.scope import Scope
 from db.__channels_has_sessions import channels_has_sessions
 from db.__base import Base
+
+from conf.local import DEBUG
+
+
 from sqlalchemy import Column
 from sqlalchemy import Integer, DateTime
 
 """
     @todo: perform more precise error check
 """
-        
+
+TAG = "db.session"
+
 class Session(Base, InjectiveTable):
     """`sessions`
 
@@ -27,18 +33,32 @@ class Session(Base, InjectiveTable):
     
     __defaults__ = { 'iBegin': None, 'iEnd': None, };
     
-    id = Column(10, Integer(Unsigned=True), primary_key=True);
+    id = Column(Integer(10, Unsigned=True), primary_key=True);
     interval_begin = Column('iBegin', DateTime);
     interval_end = Column('iEnd', DateTime);
     
+    def __init__(self, interva_begin, interval_end):
+        self.interval_begin = interva_begin;
+        self.interval_end = interval_end;
+    
+    def __repr__(self):
+        return "<Session %i | {%s : %s}>" % (int(self.id), str(self.interval_begin), str(self.interval_end));
+    
+    def __str__(self):
+        return "<Session %i | {%s : %s}>" % (int(self.id), str(self.interval_begin), str(self.interval_end));
+    
     @staticmethod
     def check(key):
-        return type(key) == type("") and key.lower() in ["session", "sessions"];
+        return str(key).lower() in ["session", "sessions"];
     
     @staticmethod
     def inject(obj, session):
+        if DEBUG:
+            print "%s: input information: %s " % (TAG, obj);
+
         errors = {};
-        obj.update(Session.__defaults__);
+        preset = Session.__defaults__;
+        preset.update(obj);
         
         # Perform errors check
         if (obj['iBegin'] == None):
@@ -48,31 +68,34 @@ class Session(Base, InjectiveTable):
             errors['iEnd'] = "iEnd couldn't have zero value, please check it";
             
         if (len(errors)):
-            return obj, errors;
+            return session, obj, errors;
         
         # Create session element
-        toBePushed = Session();
-        toBePushed.interval_begin = obj['iBegin'];
-        toBePushed.interval_end = obj['iEnd'];
+        toBePushed = Session(obj['iBegin'], obj['iEnd']);
         
         session.add(toBePushed);
+        
+#        if DEBUG:
+#            print toBePushed;
         
         # Connect session with channels, there rules we are working with
         # 1. Scope object control correctness of all information it contains
         # 2. Scope translate all information into one usual format
         
-        scope = Scope.state();
-        if (scope.has_key("channels") and len(scope["channels"])):
-            for channel_title in scope["channels"]:
-                connection = channels_has_sessions();
-                connection.sessions_id = toBePushed.id;
-                connection.channels_title = channel_title;
-                session.add(connection);
+#        scope = Scope.state();
+#        if scope.has_key("channels") and len(scope["channels"]):
+#            for channel_title in scope["channels"]:
+#                if DEBUG:
+#                    print "Connection %s with <Channel %s>" % (str(session), channel_title);
+#                connection = channels_has_sessions();
+#                connection.sessions_id = toBePushed.id;
+#                connection.channels_title = channel_title;
+#                session.add(connection);
         
         for i in Session.__defaults__.keys():
             del obj[i];
         
-        return obj, {};
+        return session, obj, {};
     
     @staticmethod
     def tableName():

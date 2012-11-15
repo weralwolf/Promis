@@ -36,11 +36,11 @@ class Channel(Base):
     description = Column(String);
     sampling_frequency = Column(Float);
     
-    device_title = Column(String(255), ForeignKey('devices.titles'));
+    device_title = Column(String(255), ForeignKey('devices.title'));
     device = relationship('Device', backref='channel');
     
     paramenters_title = Column(String(255), ForeignKey('parameters.title'));
-    paramenter = relationship('Parameters', backref='channel');
+    paramenter = relationship('Parameter', backref='channel');
     
     sessions = relation(
                             'Channel',

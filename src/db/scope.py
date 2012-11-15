@@ -4,13 +4,18 @@ Created on Nov 1, 2012
 @author: weralwolf
 '''
 
-from math import floor
 from db.__injective_table import InjectiveTable
 
+from conf.local import DEBUG
+
+
+from math import floor
 """
     @todo: create methods pushLevel, pullLevel to automate scope work, delegated
            to next release cause of over-engineering fear
 """
+
+TAG = "db.scope"
 
 class Scope(InjectiveTable):
 
@@ -58,15 +63,20 @@ class Scope(InjectiveTable):
         if self._level_ < floor(float(level)):
             self._level_ = floor(float(level));
         
-        if (self._order_.has_key(level)):
+        if self._order_.has_key(level):
             self._order_[level].extend(obj.keys());
         else:
             self._order_[level] = obj.keys();
 
         for key in obj.keys():
-            if (not self._container_.has_key(key)):
+            if not self._container_.has_key(key):
                 self._container_[key] = [];
+                
+            if DEBUG:
+                print "%s: + [level: %i] %s = %s" % (TAG, self._level_, str(key), str(obj[key]));
             self._container_[key].append(obj[key]);
+        
+        return session, {}, {};
     
     @staticmethod
     def pop(level= -1, justSkim=False):
@@ -83,27 +93,30 @@ class Scope(InjectiveTable):
             
         """
         self = Scope();
-        if (level == -1):
+        if level == -1:
             level = self._level_;
             
         for i in self._order_.keys():
             currentLevel = float(i);
             
             # Check common condition for any kind of pop operation
-            if (currentLevel <= self._level_):
+            if currentLevel <= self._level_:
                 continue;
             
             # Check skim-kind condition 
-            if (justSkim and floor(currentLevel) == self._level_):
+            if justSkim and floor(currentLevel) == self._level_:
                 continue;
             
             # Level which should be removed from scope
             removable = self._order_[i];
             
-            if (not len(removable)):
+            if not len(removable):
                 keys = removable.pop();
                 for key in keys:
+                    if DEBUG:
+                        print "%s: - [level: %i] %s" % (TAG, self._level_, str(key));
                     self._container_[key].pop();
+                
                     
             del self._order_[i];
     

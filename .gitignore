@@ -3,4 +3,5 @@ src/conf/*.py
 .settings/*
 .directory
 */.directory
-*/*.pyc
+src/*.pyc
+src/*/*.pyc
