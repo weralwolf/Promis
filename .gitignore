@@ -1,4 +1,5 @@
 src/conf/*.py
+!src/conf/__init__.py
 .project
 .settings/*
 .directory

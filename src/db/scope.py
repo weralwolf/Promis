@@ -23,7 +23,7 @@ class _Scope:
     
     Entities
     =============
-    Contributor is a json-file which contains satellites data information to be 
+    Contributor is a JSON-file which contains satellites data information to be 
     pushed into database.
     
     Contributor-immutable tables is a tables which couldn't be edited by 
@@ -32,7 +32,7 @@ class _Scope:
     
     List of immutable tables: satellites, devices, channels, parameters.
     
-    Contributor-mutable tables is a tables where json-contributed data would be
+    Contributor-mutable tables is a tables where JSON-contributed data would be
     stored. All mutable entities dependent on entities from immutable tables.
     
     List of mutable tables: sessions, sessions_options, measurement_points,
@@ -46,10 +46,10 @@ class _Scope:
     Primary-keys structuring
     =============
     All PK structured by levels of data-inheritance. Each level determined by
-    levels of json-data inheritance and executed injection into database.
+    levels of JSON-data inheritance and executed injection into database.
     
     There two types of levels integer and half-integer. Integer levels is a
-    levels made by json-data inheritance. Half-integer levels is determines by
+    levels made by JSON-data inheritance. Half-integer levels is determines by
     db-injections. 
     
     
@@ -62,8 +62,8 @@ class _Scope:
     =============
     Scope would be filled in two ways: manually and automatically.
     
-    Manual filling could be done with json-nodes placed in any place of 
-    json-data. Scope-nodes structure:
+    Manual filling could be done with JSON-nodes placed in any place of 
+    JSON-data. Scope-nodes structure:
     "scope": {
         "tablename_pkname": "pkvalue",
         "tablename_pkname": {
@@ -121,8 +121,8 @@ class _Scope:
         in a form of list.
     
     @bug: parameters should have many-to-many relation with channels
-    @todo: json-should be used to extract read-only data
-    @todo: any json should give respond
+    @todo: JSON-should be used to extract read-only data
+    @todo: any JSON should give respond
     """
 
     def __init__(self):
