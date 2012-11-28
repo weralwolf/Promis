@@ -7,7 +7,7 @@ Created on Nov 1, 2012
 from db.connection import DBConnection
 from db import Session, SessionOption, MeasurementPoint, Measurement, Scope
 
-import conf.db as dbConf
+import conf.db as db
 from conf.local import DEBUG
 
 TAG = "process"
@@ -15,7 +15,7 @@ TAG = "process"
 # List of classes which could be used as
 __injectors__ = [Session, SessionOption, MeasurementPoint, Measurement, Scope];
 #__db_conf__ = dbConf.select('contributor');
-__db_conf__ = dbConf.select('root');
+__db_conf__ = db.select('root');
 __connection__ = DBConnection(
                               __db_conf__['user'],
                               __db_conf__['password'],
