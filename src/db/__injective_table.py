@@ -31,6 +31,15 @@ class InjectiveTable:
         return {};
     
     @staticmethod
+    def find(options):
+        """
+            Find out primary key by values mentioned in options
+            @param options: key-value of search parameters 
+                            @ref{db.scope.scope_filling}
+        """
+        return "";
+    
+    @staticmethod
     def tableName():
         """
             Name of data destination

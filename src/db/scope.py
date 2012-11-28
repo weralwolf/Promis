@@ -18,6 +18,112 @@ TAG = "db.scope"
 
 @Singleton
 class _Scope:
+    """
+    Scope is a singleton DB primary-keys keeper.
+    
+    Entities
+    =============
+    Contributor is a JSON-file which contains satellites data information to be 
+    pushed into database.
+    
+    Contributor-immutable tables is a tables which couldn't be edited by 
+    contributor, but only by database-manager. Any contributed data should be
+    connected with entities from immutable tables.
+    
+    List of immutable tables: satellites, devices, channels, parameters.
+    
+    Contributor-mutable tables is a tables where JSON-contributed data would be
+    stored. All mutable entities dependent on entities from immutable tables.
+    
+    List of mutable tables: sessions, sessions_options, measurement_points,
+    measurements.      
+    
+    DB primary-keys is a primary keys of all contributor-immutable tables or 
+    keys of contributor-mutable tables required by dependencies of other 
+    contributor-mutable tables.
+    
+    
+    Primary-keys structuring
+    =============
+    All PK structured by levels of data-inheritance. Each level determined by
+    levels of JSON-data inheritance and executed injection into database.
+    
+    There two types of levels integer and half-integer. Integer levels is a
+    levels made by JSON-data inheritance. Half-integer levels is determines by
+    db-injections. 
+    
+    
+    Tables structure
+    =============
+    @ref{db.__init__}
+    
+    
+    Scope filling
+    =============
+    Scope would be filled in two ways: manually and automatically.
+    
+    Manual filling could be done with JSON-nodes placed in any place of 
+    JSON-data. Scope-nodes structure:
+    "scope": {
+        "tablename_pkname": "pkvalue",
+        "tablename_pkname": {
+            "othertablename:fieldname": "fieldvalue",
+            "fieldname": "fieldvalue",
+            ...
+        }
+        ...
+    }
+    
+    where:
+        "tablename" - name of immutable or mutable table,
+        "pkname" -  could be "title" or "id",
+        "pkvalue" - value of pk which,
+        "fieldname" - name of table field name.
+    
+    Example:
+    "scope": {
+        "satellites_title": "DE2",
+        "devices_title": "idm",
+        "channels_title": "He",
+        "parameters_title": "density"
+        "sessions_id": {
+            "iEnd": "458787546598",
+            "sessions_options:title": "mode",
+            "sessions_options:value": "scanning"
+        }
+    }
+    
+    Automatic filling would be made by processing script and all values would be
+    pushed into half-integer levels.
+    
+    Scope cleaning
+    =============
+    Elements of scope would be pulled out by request and all old values would be
+    restored. If you need to save some values on level upper to transfer them
+    into sibling nodes, you should add special flag:
+    
+    "flag:up-transfer": "True"
+    
+    , but default is "False"-value.
+    
+    PK list-values
+    =============
+    List values would be used to work out two problems:
+    1. Many-to-many relations, to connect tables
+        Sessions could be connected with many channels, that's why you may need
+        to define a few channels sessions would be connected with, like:
+            "channels_title": ["idm", "lapi", "gas_wats", "rpa"]
+
+    2. Bulk-injections, then we want to insert a lot of measures at once
+        It much more easier to make bulk-injection of data instead one-by-one
+        injections. That's why measuremnt_points ids should be saved to be used
+        during measurement injections, they would be saved on half-integer level
+        in a form of list.
+    
+    @bug: parameters should have many-to-many relation with channels
+    @todo: JSON-should be used to extract read-only data
+    @todo: any JSON should give respond
+    """
 
     def __init__(self):
         """
