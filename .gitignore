@@ -6,3 +6,4 @@ src/conf/*.py
 */.directory
 src/*.pyc
 src/*/*.pyc
+data/db/*.mwb.bak
