@@ -26,11 +26,11 @@ __connection__ = DBConnection(
 
 def process(key, obj, session=None):
     '''
-        Process JSON-key element and recursively goes deep inside 
-        @param key: element-name of some list or JSON-dictionary which should be 
-               processed
-        @param obj: element-value which should be processed
-        @param session: data base session data to be pushed to 
+    Process JSON-key element and recursively goes deep inside 
+    @param key: element-name of some list or JSON-dictionary which should be 
+           processed
+    @param obj: element-value which should be processed
+    @param session: data base session data to be pushed to 
     '''
     
     # Guaranteed container of data base session
