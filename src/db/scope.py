@@ -30,7 +30,7 @@ class _Scope:
     contributor, but only by database-manager. Any contributed data should be
     connected with entities from immutable tables.
     
-    List of immutable tables: satellites, devices, channels, parameters.
+    List of immutable tables: satellites, devices, channels, parameters, units.
     
     Contributor-mutable tables is a tables where JSON-contributed data would be
     stored. All mutable entities dependent on entities from immutable tables.
