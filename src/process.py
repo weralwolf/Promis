@@ -7,15 +7,15 @@ Created on Nov 1, 2012
 from db.connection import DBConnection
 from db import Session, SessionOption, MeasurementPoint, Measurement, Scope
 
-import conf.db as dbConf
+import conf.db as db
 from conf.local import DEBUG
 
 TAG = "process"
 
 # List of classes which could be used as
 __injectors__ = [Session, SessionOption, MeasurementPoint, Measurement, Scope];
-#__db_conf__ = dbConf.select('contributor');
-__db_conf__ = dbConf.select('root');
+# __db_conf__ = dbConf.select('contributor');
+__db_conf__ = db.select('root');
 __connection__ = DBConnection(
                               __db_conf__['user'],
                               __db_conf__['password'],
@@ -29,27 +29,31 @@ def process(key, obj, session=None):
     Process JSON-key element and recursively goes deep inside 
     @param key: element-name of some list or JSON-dictionary which should be 
            processed
-    @param obj: element-value which should be processed
-    @param session: data base session data to be pushed to 
+    @param obj: element-value which should be processed, it's an JSON-node
+    @param session: data base session data to be pushed to
     '''
     
     # Guaranteed container of data base session
     __session = None;
     
-    # Indicate does session should be also closed by this thread of recursion
+    # Flag which indicates that session created at this iteration and should be
+    # deleted here. Also if __emitter is True, it means that it's base level
+    # of process inheritance.  
     __emitter = False;
     
-    # Indicate does was created a new scope here
+    # New scope creation flag
     __new_scope = False;
 
-    # We should verify data base session situation
+    # We should verify data base session status and assign right value for it
     if (session == None):
+        # Creating new session, cause it wasn't created before
         __session = __connection__.session();
         __emitter = True;
     else:
+        # Inherit already created session
         __session = session;
 
-    # Stop doing nothing, cause empty object couldn't be parsed
+    # Stop doing nothing, cause empty object couldn't be processed
     if (obj == None) :
         return;
 
@@ -65,12 +69,17 @@ def process(key, obj, session=None):
         if DEBUG:
             print "%s: [%s] dictionary -> exact object" % (TAG, str(key));
 
+        # Select type of injector to be used to process object 
         for injector in __injectors__:
+            
+            # Comparing injector possible keys with current 
             if injector.check(key):
                 if DEBUG:
                     print "%s: [%s] injector found `%s`!" % (TAG, str(key), injector.tableName());
                     
-                if injector.tableName() == "Scope":
+                # @attention: specific behavior for Scope to check __new_scope flag
+                # @todo: remove it with global `push` & `pop` functions for scope
+                if injector.check("scope"):
                     if DEBUG:
                         print "%s: new scope registered" % (TAG);
                         
@@ -78,7 +87,7 @@ def process(key, obj, session=None):
 
                 __session, _children, _errors = injector.inject(obj, __session);
                 
-                # If we have any errors we should stop
+                # If we have any errors we should stop and give them back to user
                 if len(_errors):
                     __session.rollback();
                     return _errors;
