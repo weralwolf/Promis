@@ -15,7 +15,7 @@ class MeasurementPoint(Base, InjectiveTable):
     `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
     `time` DOUBLE NOT NULL ,
     `sessions_id` INT(10) UNSIGNED NULL ,
-    `lattitude` DOUBLE NULL ,
+    `latitude` DOUBLE NULL ,
     `longitude` DOUBLE NULL ,
     `altitude` DOUBLE NULL ,
     PRIMARY KEY (`id`) ,
