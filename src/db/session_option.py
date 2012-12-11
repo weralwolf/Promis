@@ -1,7 +1,7 @@
 '''
 Created on Nov 14, 2012
 
-@author: weralwolf
+@author: weralwolf, elpiankova
 '''
 
 from db.__injective_table import InjectiveTable

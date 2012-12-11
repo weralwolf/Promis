@@ -1,7 +1,7 @@
 '''
 Created on Nov 1, 2012
 
-@author: weralwolf
+@author: weralwolf, elpiankova
 '''
 
 from sqlalchemy import create_engine
