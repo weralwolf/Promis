@@ -94,8 +94,8 @@ class Session(Base, InjectiveTable):
     interval_begin = Column('iBegin', DateTime);
     interval_end = Column('iEnd', DateTime);
     
-    def __init__(self, interva_begin, interval_end):
-        self.interval_begin = interva_begin;
+    def __init__(self, interval_begin, interval_end):
+        self.interval_begin = interval_begin;
         self.interval_end = interval_end;
     
     def __repr__(self):
@@ -131,8 +131,8 @@ class Session(Base, InjectiveTable):
         toBePushed = Session(obj['iBegin'], obj['iEnd']);
         
         # Connect session with channels, there rules we are working with
-        # 1. Scope object control correctness of all information it contains
-        # 2. Scope translate all information into one usual format
+        # 1. Scope object controls correctness of all information it contains
+        # 2. Scope translates all information into one usual format
         
         scope = Scope.state();
         

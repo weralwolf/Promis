@@ -59,9 +59,6 @@ class SessionOption(Base, InjectiveTable):
         # Perform errors check
         if (obj['title'] == None):
             errors['title'] = "Session option title couldn't have zero value, please check it";
-            
-        if (len(errors)):
-            return session, obj, errors;
         
         # Create session option element
         toBePushed = SessionOption(obj['title'], obj['value']);
@@ -69,7 +66,24 @@ class SessionOption(Base, InjectiveTable):
         # Perform connection session option with session into 'session_id' field
         scope = Scope.state();
         
-        return {};   
+        if DEBUG:
+            print "%s: current scope %s" % (TAG, str(scope));
+            
+        if scope.has_key("sessions_id"):
+            pass
+        else:
+            errors['session_id'] = "Session id for session options couldn't have zero value, please check it";
+            
+        if (len(errors)):
+            return session, obj, errors;
+        
+        session.add(toBePushed);
+        session.flush();
+        
+        if DEBUG:
+            print "%s: %s" % (TAG, toBePushed);
+        
+        return session, obj, {};   
     
     @staticmethod
     def tableName():
