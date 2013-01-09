@@ -49,7 +49,7 @@ class _Scope:
     levels of JSON-data inheritance and executed injection into database.
     
     There two types of levels integer and half-integer. Integer levels is a
-    levels made by JSON-data inheritance. Half-integer levels is determines by
+    levels made by JSON-data inheritance. Half-integer levels is determined by
     db-injections. 
     
     

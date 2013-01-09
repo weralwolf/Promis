@@ -70,9 +70,9 @@ class SessionOption(Base, InjectiveTable):
             print "%s: current scope %s" % (TAG, str(scope));
             
         if scope.has_key("sessions_id"):
-            pass
+            toBePushed.sessions_id = scope["session_id"]
         else:
-            errors['session_id'] = "Session id for session options couldn't have zero value, please check it";
+            errors['session_id'] = "Session id for session options couldn't have zero value, why isn't this in scope?";
             
         if (len(errors)):
             return session, obj, errors;
