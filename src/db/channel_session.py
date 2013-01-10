@@ -115,20 +115,20 @@ class Session(Base, InjectiveTable):
 
         errors = {};
         preset = Session.__defaults__;
-        preset.update(obj);
+        preset.update(obj);            # Why are you need "preset" variable if you don't use it later?
         
         # Perform errors check
-        if (obj['iBegin'] == None):
+        if (obj['iBegin'] == None):    # Maybe you should use preset['iBegin'] here because if obj hasn't 'iBegin' key exception will be generated
             errors['iBegin'] = "iBegine couldn't have zero value, please check it";
             
-        if (obj['iEnd'] == None):
+        if (obj['iEnd'] == None):      # Maybe you should use preset['iEnd'] here because if obj hasn't 'iEnd' key exception will be generated
             errors['iEnd'] = "iEnd couldn't have zero value, please check it";
             
         if (len(errors)):
             return session, obj, errors;
         
         # Create session element
-        toBePushed = Session(obj['iBegin'], obj['iEnd']);
+        toBePushed = Session(obj['iBegin'], obj['iEnd']);  # Maybe you should use preset['iEnd'] and preset['iEnd'] here
         
         # Connect session with channels, there rules we are working with
         # 1. Scope object controls correctness of all information it contains

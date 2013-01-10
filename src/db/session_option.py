@@ -30,17 +30,24 @@ class SessionOption(Base, InjectiveTable):
     """
     __tablename__ = 'session_options';
     
-    __defaults__ = { 'sessions_id': None, 'title': None, 'value': None, }; # Is it necessary????
+    __defaults__ = { 'sessions_id': None, 'title': None, 'value': None, }; 
     
     id = Column(Integer(10, Unsigned=True), primary_key=True);
     title = Column(String(255));
     value = Column(String(255));
     sessions_id = Column(Integer(10, Unsigned=True), ForeignKey('sessions.id'));
     
-    def __init__(self, title, value):
+    def __init__(self, title, value=None):
         self.title = title;
         self.value = value;
+
+    def __repr__(self):
+        return "<Session Option %i | {%s : %s} of Session %i>" % (int(self.id), str(self.title), str(self.value), int(self.session_id));
+        # I'm not sure that I wrote correct "self.session_id" because it isn't in constructor. Is it correct? 
     
+    def __str__(self):
+        return "<Session Option %i | {%s : %s} of Session %i>" % (int(self.id), str(self.title), str(self.value), int(self.session_id));
+        
     @staticmethod
     def check(key):
         return type(key) == type("") and key.lower() in [
@@ -57,11 +64,11 @@ class SessionOption(Base, InjectiveTable):
         preset.update(obj);
         
         # Perform errors check
-        if (obj['title'] == None):
+        if (preset['title'] == None):
             errors['title'] = "Session option title couldn't have zero value, please check it";
         
         # Create session option element
-        toBePushed = SessionOption(obj['title'], obj['value']);
+        toBePushed = SessionOption(preset['title'], preset['value']);
         
         # Perform connection session option with session into 'session_id' field
         scope = Scope.state();
@@ -72,7 +79,7 @@ class SessionOption(Base, InjectiveTable):
         if scope.has_key("sessions_id"):
             toBePushed.sessions_id = scope["session_id"]
         else:
-            errors['session_id'] = "Session id for session options couldn't have zero value, why isn't this in scope?";
+            errors['session_id'] = "Session id for session options couldn't have zero value, we should have information about session in json-file";
             
         if (len(errors)):
             return session, obj, errors;

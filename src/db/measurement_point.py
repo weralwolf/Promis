@@ -7,7 +7,12 @@ Created on Nov 14, 2012
 from db.__injective_table import InjectiveTable
 from db.__base import Base
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import Integer, Float   
+from sqlalchemy import Integer, Float
+
+from conf.local import DEBUG
+from db import Scope
+
+TAG = "db.measurement_point"
     
 class MeasurementPoint(Base, InjectiveTable):
     """`measurament_points`
@@ -26,13 +31,22 @@ class MeasurementPoint(Base, InjectiveTable):
     """
     __tablename__ = 'measurement_points';
     
+    __defaults__ = {'time': None, 'sessions_id': None, 
+                    'latitude': None, 'longitude': None, 'altitude': None};     
+    
     id = Column(Integer(10, Unsigned=True), primary_key=True);
     time = Column(Float);
     sessions_id = Column(Integer(10, Unsigned=True), ForeignKey('sessions.id'));
-    lattitude = Column(Float, default=None);
+    latitude = Column(Float, default=None);
     longitude = Column(Float, default=None);
     altitude = Column(Float, default=None);
-    
+
+    def __init__(self, time, latitide=None, longitude=None, altitude=None):
+        self.time = time;
+        self.latitude = latitide;
+        self.longitude = longitude;
+        self.altitude = altitude;
+     
     @staticmethod
     def check(key):
         return type(key) == type("") and key.lower() in [
@@ -42,7 +56,45 @@ class MeasurementPoint(Base, InjectiveTable):
     
     @staticmethod
     def inject(obj, session):
-        return {};   
+        if DEBUG:
+            print "%s: input information: %s " % (TAG, obj);
+            
+        errors = {};
+        preset = MeasurementPoint.__defaults__;
+        preset.update(obj);
+
+        # Perform errors check
+        if (preset['time'] == None):
+            errors['time'] = "Time of Measurement point couldn't have Null value, please check it";
+ 
+        # Create measurement point element
+        if ("latitude" and "longitude" and "altitude" in obj.keys()):
+            toBePushed = MeasurementPoint(preset['time'], preset['latitude'], preset["longitude"], preset["altitude"]);
+        else:
+            toBePushed = MeasurementPoint(preset['time'])
+        
+        # Perform connection session option with session into 'session_id' field
+        scope = Scope.state(); 
+           
+        if DEBUG:
+            print "%s: current scope %s" % (TAG, str(scope));
+                    
+        if scope.has_key("sessions_id"):
+            toBePushed.sessions_id = scope["session_id"]
+        else:
+            errors['session_id'] = "Session id for Measurement points couldn't have zero value, we should have information about session in json-file";
+
+        if (len(errors)):
+            return session, obj, errors;
+        
+        session.add(toBePushed);
+        session.flush();
+        
+        if DEBUG:
+            print "%s: %s" % (TAG, toBePushed);
+        
+        return session, obj, {};                            
+ 
     
     @staticmethod
     def tableName():
