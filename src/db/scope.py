@@ -9,6 +9,8 @@ from conf.local import DEBUG
 from common import Singleton
 
 from math import floor
+
+from db.injectors import injectors
 """
     @todo: create methods pushLevel, pullLevel to automate scope work, delegated
            to next release cause of over-engineering fear
@@ -169,12 +171,20 @@ class _Scope:
             self._order_[level] = obj.keys();
 
         for key in obj.keys():
-            if not self._container_.has_key(key):
-                self._container_[key] = [];
+            value = None;
+            # before 
+            for injector in injectors:
+                value = injector.find(obj[key]);
                 
-            if DEBUG:
-                print "%s: + [level: %i] %s = %s" % (TAG, self._level_, str(key), str(obj[key]));
-            self._container_[key].append(obj[key]);
+            if value:
+                if not self._container_.has_key(key):
+                    self._container_[key] = [];
+                    
+                if DEBUG:
+                    print "%s: + [level: %i] %s = %s" % (TAG, self._level_, 
+                                                         str(key), 
+                                                         str(value));
+                self._container_[key].append(value);
         
         return session, {}, {};
     
@@ -265,5 +275,9 @@ class _Scope:
     
     def tableName(self):
         return "Scope";
+    
+    @staticmethod
+    def find(options):
+        return None;
 
 Scope = _Scope.Instance();

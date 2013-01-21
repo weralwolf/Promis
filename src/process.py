@@ -5,15 +5,14 @@ Created on Nov 1, 2012
 '''
 
 from db.connection import DBConnection
-from db import Session, SessionOption, MeasurementPoint, Measurement, Scope
 
 import conf.db as db
 from conf.local import DEBUG
+from db.injectors import injectors
 
 TAG = "process"
 
 # List of classes which could be used as
-__injectors__ = [Session, SessionOption, MeasurementPoint, Measurement, Scope];
 # __db_conf__ = dbConf.select('contributor');
 __db_conf__ = db.select('root');
 __connection__ = DBConnection(
@@ -70,7 +69,7 @@ def process(key, obj, session=None):
             print "%s: [%s] dictionary -> exact object" % (TAG, str(key));
 
         # Select type of injector to be used to process object 
-        for injector in __injectors__:
+        for injector in injectors:
             
             # Comparing injector possible keys with current 
             if injector.check(key):
