@@ -5,15 +5,14 @@ Created on Nov 1, 2012
 '''
 
 from db.connection import DBConnection
-from db import Session, SessionOption, MeasurementPoint, Measurement, Scope
 
 import conf.db as db
 from conf.local import DEBUG
+from db.injectors import injectors
 
 TAG = "process"
 
 # List of classes which could be used as
-__injectors__ = [Session, SessionOption, MeasurementPoint, Measurement, Scope];
 # __db_conf__ = dbConf.select('contributor');
 __db_conf__ = db.select('root');
 __connection__ = DBConnection(
@@ -41,8 +40,9 @@ def process(key, obj, session=None):
     # of process inheritance.  
     __emitter = False;
     
-    # New scope creation flag
-    __new_scope = False;
+#    # New scope creation flag
+#    __new_scope = False;
+    Scope.pushLevel();
 
     # We should verify data base session status and assign right value for it
     if (session == None):
@@ -70,20 +70,20 @@ def process(key, obj, session=None):
             print "%s: [%s] dictionary -> exact object" % (TAG, str(key));
 
         # Select type of injector to be used to process object 
-        for injector in __injectors__:
+        for injector in injectors:
             
             # Comparing injector possible keys with current 
             if injector.check(key):
                 if DEBUG:
                     print "%s: [%s] injector found `%s`!" % (TAG, str(key), injector.tableName());
                     
-                # @attention: specific behavior for Scope to check __new_scope flag
-                # @todo: remove it with global `push` & `pop` functions for scope
-                if injector.check("scope"):
-                    if DEBUG:
-                        print "%s: new scope registered" % (TAG);
-                        
-                    __new_scope = True;
+#                # @attention: specific behavior for Scope to check __new_scope flag
+#                # @todo: remove it with global `push` & `pop` functions for scope
+#                if injector.check("scope"):
+#                    if DEBUG:
+#                        print "%s: new scope registered" % (TAG);
+#                        
+#                    __new_scope = True;
 
                 __session, _children, _errors = injector.inject(obj, __session);
                 
@@ -108,9 +108,10 @@ def process(key, obj, session=None):
         __session.commit();
         __session.close();
     
-    if __new_scope:
-        if DEBUG:
-            print "%s: removing current level scope" % (TAG);
-            
-        Scope.pop();
+#    if __new_scope:
+#        if DEBUG:
+#            print "%s: removing current level scope" % (TAG);
+#            
+#        Scope.pop();
+    Scope.popLevel();
     return {};

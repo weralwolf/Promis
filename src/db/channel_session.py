@@ -1,8 +1,8 @@
-'''
+"""
 Created on Nov 14, 2012
 
 @author: weralwolf
-'''
+"""
 
 from db.__injective_table import InjectiveTable
 from db import Scope
@@ -34,9 +34,9 @@ CONSTRAINT `fk_channels_has_sessions_sessions1`
     REFERENCES `promis`.`sessions` (`id` )
 """
 
-channels_has_sessions = Table('channels_has_sessions', Base.metadata,
-                              Column('channels_title', String(255), ForeignKey('channels.title')),
-                              Column('sessions_id', Integer(10, Unsigned=True), ForeignKey('sessions.id'))
+channels_has_sessions = Table("channels_has_sessions", Base.metadata,
+                              Column("channels_title", String(255), ForeignKey("channels.title")),
+                              Column("sessions_id", Integer(10, Unsigned=True), ForeignKey("sessions.id"))
                               );
 
 TAG = "db.session"
@@ -60,23 +60,27 @@ class Channel(Base):
         FOREIGN KEY (`parameters_title` )
         REFERENCES `promis`.`parameters` (`title` )
     """
-    __tablename__ = 'channels';
+    __tablename__ = "channels";
     
     title = Column(String(255), primary_key=True, unique=True);
     description = Column(String);
     sampling_frequency = Column(Float);
     
-    devices_title = Column(String(255), ForeignKey('devices.title'));
-    device = relationship('Device', backref='channel');
+    devices_title = Column(String(255), ForeignKey("devices.title"));
+    device = relationship("Device", backref="channel");
     
-    parameters_title = Column(String(255), ForeignKey('parameters.title'));
-    parameter = relationship('Parameter', backref='channel');
+    parameters_title = Column(String(255), ForeignKey("parameters.title"));
+    parameter = relationship("Parameter", backref="channel");
     
     sessions = relation(
-                            'Session',
+                            "Session",
                             secondary=channels_has_sessions,
-                            backref='channels'
+                            backref="channels"
                         );
+
+    @staticmethod
+    def find(options, session):
+        pass;
 
 class Session(Base, InjectiveTable):
     """`sessions`
@@ -86,13 +90,13 @@ class Session(Base, InjectiveTable):
     `iEnd` TIMESTAMP NOT NULL ,
     PRIMARY KEY (`id`)
     """
-    __tablename__ = 'sessions';
+    __tablename__ = "sessions";
     
-    __defaults__ = { 'iBegin': None, 'iEnd': None, };
+    __defaults__ = { "iBegin": None, "iEnd": None, };
     
     id = Column(Integer(10, Unsigned=True), primary_key=True);
-    interval_begin = Column('iBegin', DateTime);
-    interval_end = Column('iEnd', DateTime);
+    interval_begin = Column("iBegin", DateTime);
+    interval_end = Column("iEnd", DateTime);
     
     def __init__(self, interval_begin, interval_end):
         self.interval_begin = interval_begin;
@@ -109,6 +113,54 @@ class Session(Base, InjectiveTable):
         return str(key).lower() in ["session", "sessions"];
     
     @staticmethod
+    def find(options, session):
+        collector = session.query(Session.id);
+        
+        collected = [];
+        
+        if (type(options) != type({})):
+            # Verify given key is it exists
+            collected = collector.filter(Session.id == int(options)).all();
+        
+        elif (type(options) == type({})):
+            for i in options.keys():
+                splited = i.split(".");
+                splited.append("eq");
+                if (len(splited) > 1):
+                    key = splited[0];
+                    operator = splited[1];
+                     
+                    if (key in Session.__defaults__.keys()):
+                        if (key == "iBegin"):
+                            if (operator == "eq"):
+                                collector = collector.filter(Session.interval_begin == options[i]);
+                            if (operator == "lt"):
+                                collector = collector.filter(Session.interval_begin < options[i]);
+                            if (operator == "gt"):
+                                collector = collector.filter(Session.interval_begin > options[i]);
+
+                        if (key == "iEnd"):
+                            if (operator == "eq"):
+                                collector = collector.filter(Session.interval_end == options[i]);
+                            if (operator == "lt"):
+                                collector = collector.filter(Session.interval_end < options[i]);
+                            if (operator == "gt"):
+                                collector = collector.filter(Session.interval_end > options[i]);
+                else:
+                    #@todo: create an exception
+                    pass;
+            collected = collector.all();
+        
+        if (not len(collected)):
+            return None;
+        elif (len(collected) > 1):
+            #@todo: make an exception
+            return None;
+        else:
+            return collected[0];
+            
+    
+    @staticmethod
     def inject(obj, session):
         if DEBUG:
             print "%s: input information: %s " % (TAG, obj);
@@ -118,17 +170,17 @@ class Session(Base, InjectiveTable):
         preset.update(obj);           
         
         # Perform errors check
-        if (preset['iBegin'] == None):    
-            errors['iBegin'] = "iBegine couldn't have zero value, please check it";
+        if (preset["iBegin"] == None):    
+            errors["iBegin"] = "iBegine couldn't have zero value, please check it";
             
-        if (preset['iEnd'] == None):      
-            errors['iEnd'] = "iEnd couldn't have zero value, please check it";
+        if (preset["iEnd"] == None):      
+            errors["iEnd"] = "iEnd couldn't have zero value, please check it";
             
         if (len(errors)):
             return session, obj, errors;
         
         # Create session element
-        toBePushed = Session(obj['iBegin'], obj['iEnd']);  
+        toBePushed = Session(obj["iBegin"], obj["iEnd"]);  
         
         # Connect session with channels, there rules we are working with
         # 1. Scope object controls correctness of all information it contains
@@ -155,7 +207,7 @@ class Session(Base, InjectiveTable):
         if DEBUG:
             print "%s: %s" % (TAG, toBePushed);
         
-        Scope.inject({"sessions_id": toBePushed.id}, None, Scope.level() - 0.5);
+        Scope.inject({"sessions_id": toBePushed.id}, None, True);
         
         for i in Session.__defaults__.keys():
             del obj[i];
