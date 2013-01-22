@@ -78,6 +78,10 @@ class Channel(Base):
                             backref="channels"
                         );
 
+    @staticmethod
+    def find(options, session):
+        pass;
+
 class Session(Base, InjectiveTable):
     """`sessions`
 
