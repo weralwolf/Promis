@@ -40,8 +40,9 @@ def process(key, obj, session=None):
     # of process inheritance.  
     __emitter = False;
     
-    # New scope creation flag
-    __new_scope = False;
+#    # New scope creation flag
+#    __new_scope = False;
+    Scope.pushLevel();
 
     # We should verify data base session status and assign right value for it
     if (session == None):
@@ -76,13 +77,13 @@ def process(key, obj, session=None):
                 if DEBUG:
                     print "%s: [%s] injector found `%s`!" % (TAG, str(key), injector.tableName());
                     
-                # @attention: specific behavior for Scope to check __new_scope flag
-                # @todo: remove it with global `push` & `pop` functions for scope
-                if injector.check("scope"):
-                    if DEBUG:
-                        print "%s: new scope registered" % (TAG);
-                        
-                    __new_scope = True;
+#                # @attention: specific behavior for Scope to check __new_scope flag
+#                # @todo: remove it with global `push` & `pop` functions for scope
+#                if injector.check("scope"):
+#                    if DEBUG:
+#                        print "%s: new scope registered" % (TAG);
+#                        
+#                    __new_scope = True;
 
                 __session, _children, _errors = injector.inject(obj, __session);
                 
@@ -107,9 +108,10 @@ def process(key, obj, session=None):
         __session.commit();
         __session.close();
     
-    if __new_scope:
-        if DEBUG:
-            print "%s: removing current level scope" % (TAG);
-            
-        Scope.pop();
+#    if __new_scope:
+#        if DEBUG:
+#            print "%s: removing current level scope" % (TAG);
+#            
+#        Scope.pop();
+    Scope.popLevel();
     return {};

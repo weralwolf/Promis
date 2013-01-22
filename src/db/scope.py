@@ -98,7 +98,7 @@ class _Scope:
     Automatic filling would be made by processing script and all values would be
     pushed into half-integer levels.
     
-    Scope cleaning
+    Scope cleaning <fix> meaning of flag </fix>
     =============
     Elements of scope would be pulled out by request and all old values would be
     restored. If you need to save some values on level upper to transfer them
@@ -147,9 +147,9 @@ class _Scope:
         self._order_ = {};
         
         # Current highest integer level
-        self._level_ = 0;
-
-    def inject(self, obj, session, level = -1):
+        self._level_ = 0.;
+        
+    def inject(self, obj, session, transfer = False):
         """
         Push values into scope
         @param obj: dictionary of key-values needed to create other element
@@ -159,11 +159,10 @@ class _Scope:
         if DEBUG:
             print "%s: inject()" % (TAG);
         
-        if level == -1:
-            level = self._level_ + 1;
+        level = self._level_;
         
-        if self._level_ < floor(float(level)):
-            self._level_ = floor(float(level));
+        if (transfer):
+            level -= 0.5;
         
         if self._order_.has_key(level):
             self._order_[level].extend(obj.keys());
@@ -172,7 +171,8 @@ class _Scope:
 
         for key in obj.keys():
             value = None;
-            # before 
+            # before we get value we need to be sure what it's already value 
+            # but not a search criteria
             for injector in injectors:
                 value = injector.find(obj[key]);
                 
@@ -181,60 +181,45 @@ class _Scope:
                     self._container_[key] = [];
                     
                 if DEBUG:
-                    print "%s: + [level: %i] %s = %s" % (TAG, self._level_, 
+                    print "%s: + [level: %i] %s = %s" % (TAG, level, 
                                                          str(key), 
                                                          str(value));
                 self._container_[key].append(value);
         
         return session, {}, {};
     
-    def pop(self, level= -1, justSkim=False):
+    def pushLevel(self):
+        if DEBUG:
+            print "%s: pushLevel()" % (TAG);
+            
+        self._level_ += 1;
+        
+    def popLevel(self):
+        if DEBUG:
+            print "%s: popLevel()" % (TAG);
+            
+        self._level_ -= 1;
+        self.pop();
+    
+    def pop(self):
         """
         Pop levels before {@link level} and restore the state of scope like 
         there was no such levels
-        
-        @param level: edge level of levels to be removed, if you leave it
-               as -1 it will be replaced by last an integer level
-        
-        @param justSkim: flag to perform skim level cleaning, which means
-               that you wouldn't remove half-integer levels to save some
-               special keys to provide database group pushing operation
-            
         """
         
         if DEBUG:
-            print "%s: pop(level=%s, justSkim=%s)[_level_=%i]" % (TAG, str(level), str(justSkim), self._level_);
+            print "%s: pop()[_level_=%i]" % (TAG, self._level_);
         
-        if level == -1:
-            level = self._level_;
-            
-        if "flag:up-transfer" in self._container_.keys():
-            if DEBUG:
-                print "%s: flag:up-transfer is present" % (TAG);
-
-            justSkim = self._container_["flag:up-transfer"][len(self._container_["flag:up-transfer"]) - 1];
-            
-            
         for i in self._order_.keys():
             currentLevel = float(i);
             
             # Check common condition for any kind of pop operation
             if DEBUG:
-                print "%s: comparing levels %f < %i" % (TAG, currentLevel, level);
+                print "%s: comparing levels %f < %i" % (TAG, currentLevel, self._level_);
                 
-            if currentLevel <= level:
+            if currentLevel < self._level_:
                 continue;
             
-            # Check skim-kind condition
-            if DEBUG:
-                print "%s: comparing skim-levels %f == %i" % (TAG, floor(currentLevel), level);
-            if justSkim and floor(currentLevel) == level:
-                continue;
-            
-            # Level which should be removed from scope
-            if DEBUG:
-                print "%s: level %i going to be removed" % (TAG, i);
-
             removable = self._order_[i];
             
             if DEBUG:
@@ -243,13 +228,13 @@ class _Scope:
             if len(removable):
                 for key in removable:
                     if DEBUG:
-                        print "%s: - [level: %i] %s" % (TAG, level, str(key));
+                        print "%s: - [level: %i] %s" % (TAG, self._level_, str(key));
                     self._container_[str(key)].pop();
                 
                     
             del self._order_[i];
             
-            self._level_ = level;
+            self._level_ = self._level_ - 1.;
     
     def state(self):
         """
