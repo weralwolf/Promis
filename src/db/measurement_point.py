@@ -68,7 +68,8 @@ class MeasurementPoint(Base, InjectiveTable):
             errors['time'] = "Time of Measurement point couldn't have Null value, please check it";
  
         # Create measurement point element
-        if ("latitude" and "longitude" and "altitude" in obj.keys()):
+        # DESIGNING_QUATION: Can be set latitude and longitude without altitude in Measurement points?
+        if ("latitude" or "longitude" or "altitude" in obj.keys()):
             toBePushed = MeasurementPoint(preset['time'], preset['latitude'], preset["longitude"], preset["altitude"]);
         else:
             toBePushed = MeasurementPoint(preset['time'])
@@ -82,7 +83,8 @@ class MeasurementPoint(Base, InjectiveTable):
         if scope.has_key("sessions_id"):
             toBePushed.sessions_id = scope["session_id"]
         else:
-            errors['session_id'] = "Session id for Measurement points couldn't have zero value, we should have information about session in json-file";
+            pass
+            #WARNING: "Session id for Measurement points have zero value, is this not mistake?";
 
         if (len(errors)):
             return session, obj, errors;

@@ -47,15 +47,34 @@ class Measurement(Base, InjectiveTable):
     measurement_points_id = Column(Integer(10, Unsigned=True), ForeignKey('measurement_points.id'));
     marker = Column(Integer(10));
     measurement = Column(LargeBinary);
+    # Tolik, may be we need to create only one Error? Why you think that right_error is not the same as left_error?
+    # And may be we call this parameter as "data_precision"?
     right_error = Column('rError', LargeBinary);
     left_error = Column('lError', LargeBinary);
-    
+
+    def __init__(self, measurement, marker=0, right_error=None, left_error=None):
+        self.measurement = measurement;
+        self.marker = marker;
+        self.right_error = right_error;
+        self.left_error = left_error;
+            
     @staticmethod
     def check(key):
         return type(key) == type("") and key.lower() in ["measurement", "measurements"];
     
     @staticmethod
     def inject(obj, session):
+        if DEBUG:
+            print "%s: input information: %s " % (TAG, obj);
+            
+        errors = {};
+        preset = Measurement.__defaults__;
+        preset.update(obj);
+        
+        # Perform errors check
+        if (preset['measurement'] == None):
+            errors['measurement'] = "Measurement couldn't have Null value, please check it";
+                                
         return {};   
     
     @staticmethod
