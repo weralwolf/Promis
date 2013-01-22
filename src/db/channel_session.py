@@ -119,33 +119,33 @@ class Session(Base, InjectiveTable):
             collected = collector.filter(Session.id == int(options)).all();
         
         elif (type(options) == type({})):
-             for i in options.keys():
-                 splited = i.split(".");
-                 splited.append("eq");
-                 if (len(splited) > 1):
-                     key = splited[0];
-                     operator = splited[1];
+            for i in options.keys():
+                splited = i.split(".");
+                splited.append("eq");
+                if (len(splited) > 1):
+                    key = splited[0];
+                    operator = splited[1];
                      
-                     if (key in Session.__defaults__.keys()):
-                         if (key == "iBegin"):
+                    if (key in Session.__defaults__.keys()):
+                        if (key == "iBegin"):
                             if (operator == "eq"):
-                                 collector = collector.filter(Session.interval_begin == options[i]);
+                                collector = collector.filter(Session.interval_begin == options[i]);
                             if (operator == "lt"):
-                                 collector = collector.filter(Session.interval_begin < options[i]);
+                                collector = collector.filter(Session.interval_begin < options[i]);
                             if (operator == "gt"):
-                                 collector = collector.filter(Session.interval_begin > options[i]);
+                                collector = collector.filter(Session.interval_begin > options[i]);
 
-                         if (key == "iEnd"):
+                        if (key == "iEnd"):
                             if (operator == "eq"):
-                                 collector = collector.filter(Session.interval_end == options[i]);
+                                collector = collector.filter(Session.interval_end == options[i]);
                             if (operator == "lt"):
-                                 collector = collector.filter(Session.interval_end < options[i]);
+                                collector = collector.filter(Session.interval_end < options[i]);
                             if (operator == "gt"):
-                                 collector = collector.filter(Session.interval_end > options[i]);
-                 else:
-                     #@todo: create an exception
+                                collector = collector.filter(Session.interval_end > options[i]);
+                else:
+                    #@todo: create an exception
                     pass;
-             collected = collector.all();
+            collected = collector.all();
         
         if (not len(collected)):
             return None;
