@@ -69,10 +69,7 @@ class MeasurementPoint(Base, InjectiveTable):
  
         # Create measurement point element
         # DESIGNING_QUATION: Can be set latitude and longitude without altitude in Measurement points?
-        if ("latitude" or "longitude" or "altitude" in obj.keys()):
-            toBePushed = MeasurementPoint(preset['time'], preset['latitude'], preset["longitude"], preset["altitude"]);
-        else:
-            toBePushed = MeasurementPoint(preset['time'])
+        toBePushed = MeasurementPoint(preset['time'], preset['latitude'], preset["longitude"], preset["altitude"]);
         
         # Perform connection session option with session into 'session_id' field
         scope = Scope.state(); 

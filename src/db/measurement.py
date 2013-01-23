@@ -21,13 +21,13 @@ class Measurement(Base, InjectiveTable):
     `measurement_points_id` INT(10) UNSIGNED NOT NULL ,
     `marker` INT(10) UNSIGNED NOT NULL ,
     `measurement` BLOB NOT NULL ,
-    `rError` VARCHAR(255) NULL ,
-    `lError` VARCHAR(255) NULL ,
+    `rError` VARCHAR(255) NULL ,                                       # Tolik, may be we need to create only one Error? Why do you think that right_error is not the same as left_error?
+    `lError` VARCHAR(255) NULL ,                                       # And may be we call this parameter as "data_precision"?
     PRIMARY KEY (`id`, `parameters_title`, `parameters_units_title`) ,
-    INDEX `measurement_points_id` (`measurement_points_id` ASC) ,
-    INDEX `fk_measurements_parameters1` (`parameters_title` ASC) ,
+    INDEX `measurement_points_id` (`measurement_points_id` ASC) ,       
+    INDEX `fk_measurements_parameters1` (`parameters_title` ASC) ,     # Tolik, what does it mean "fk_" and number 1 at the end of this index? 
     INDEX `fk_measurements_channels1` (`channels_title` ASC) ,
-    CONSTRAINT `measurements_ibfk_2`
+    CONSTRAINT `measurements_ibfk_2`                                   # What does it mean "_ibfk_2"????
         FOREIGN KEY (`measurement_points_id` )
         REFERENCES `promis`.`measurament_points` (`id` )
     CONSTRAINT `fk_measurements_parameters1`
@@ -74,6 +74,20 @@ class Measurement(Base, InjectiveTable):
         # Perform errors check
         if (preset['measurement'] == None):
             errors['measurement'] = "Measurement couldn't have Null value, please check it";
+            
+        toBePushed = Measurement(preset['measurement'], preset['marker'], preset["right_error"], preset["left_error"]);
+       
+        # Perform connection measurement with measurement_point, parameter and channel
+        scope = Scope.state(); 
+
+        if DEBUG:
+            print "%s: current scope %s" % (TAG, str(scope));    
+        
+        if scope.has_key("measurement_point_id"):
+            toBePushed.measurement_points_id = scope["measurement_point_id"]
+        else:
+            errors["measurement_point_id"] = "Measurement point for Measurement couldn't have Null value, please check it";
+            
                                 
         return {};   
     
