@@ -89,7 +89,7 @@ class MeasurementPoint(Base, InjectiveTable):
         session.add(toBePushed);
         session.flush();
         
-        Scope.inject({"measurement_point_id": toBePushed.id}, None, Scope.level() - 0.5);
+        Scope.inject({"measurement_point_id": toBePushed.id}, None, True);
 
         if DEBUG:
             print "%s: %s" % (TAG, toBePushed);

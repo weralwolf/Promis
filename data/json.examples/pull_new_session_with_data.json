@@ -1,14 +1,12 @@
 {
-     "sessions": [
+     "sessions":
         {
             "scope" : {
                 "satellites": "Variant",
                 "devices": "telemetria",
                 "channels": "Bz",
-                "sessions": {
-                    "iBegin": 56,
-                    "iEnd": 67
-                }
+                "parameters": "current",
+                "paramenters_units": "Amper"
             },
             "iBegin": 56,
             "iEnd": 67,
@@ -43,12 +41,7 @@
                 },
             ],
             "measurements": [
-                {
-                    "scope": {
-                        "parameters": "current",
-                        "paramenters_units": "Amper"
-                    },
-                    "data": [
+                	                                      
                         {
                             "marker": 0,
                             "measurement": 9.99,
@@ -68,34 +61,5 @@
                             "lError": 0.41
                         }
                     ]
-                },
-                {
-                    "scope": {
-                        "parameters": "density",
-                        "paramenters_units": "cm^-3",
-                    },
-                    "data": [
-                        {
-                            "marker": 0,
-                            "measurement": 189873402.99,
-                            "rError": 1230,
-                            "lError": 1230
-                        },
-                        {
-                            "marker": 0,
-                            "measurement": 234998743.45,
-                            "rError": 3435,
-                            "lError": 3435
-                        },
-                        {
-                            "marker": 0,
-                            "measurement": 345345.53,
-                            "rError": 4543,
-                            "lError": 4543
-                        }
-                    ]
-                }
-            ]
-        }
-     ]
+         }                
 }

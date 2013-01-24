@@ -40,10 +40,6 @@ def process(key, obj, session=None):
     # of process inheritance.  
     __emitter = False;
     
-#    # New scope creation flag
-#    __new_scope = False;
-    Scope.pushLevel();
-
     # We should verify data base session status and assign right value for it
     if (session == None):
         # Creating new session, cause it wasn't created before
@@ -66,6 +62,10 @@ def process(key, obj, session=None):
             
     # Process dictionary of multiple objects 
     elif (type(obj) == type({})):
+#        # New scope creation flag
+#       __new_scope = False;
+        Scope.pushLevel();
+        
         if DEBUG:
             print "%s: [%s] dictionary -> exact object" % (TAG, str(key));
 
@@ -84,7 +84,7 @@ def process(key, obj, session=None):
 #                        print "%s: new scope registered" % (TAG);
 #                        
 #                    __new_scope = True;
-
+                
                 __session, _children, _errors = injector.inject(obj, __session);
                 
                 # If we have any errors we should stop and give them back to user
@@ -100,7 +100,13 @@ def process(key, obj, session=None):
                         print "%s: [%s] child %s" % (TAG, str(key), str(child));
 
                     process(child, _children[child]);
-
+#        if __new_scope:
+#        if DEBUG:
+#            print "%s: removing current level scope" % (TAG);
+#            
+#       Scope.pop();
+        Scope.popLevel();
+    
     if __emitter:
         if DEBUG:
             print "%s: commit and close session" % (TAG);
@@ -108,10 +114,4 @@ def process(key, obj, session=None):
         __session.commit();
         __session.close();
     
-#    if __new_scope:
-#        if DEBUG:
-#            print "%s: removing current level scope" % (TAG);
-#            
-#        Scope.pop();
-    Scope.popLevel();
     return {};

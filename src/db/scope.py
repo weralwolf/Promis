@@ -130,6 +130,8 @@ class _Scope:
     def __init__(self):
         """
          Initialize scope
+         @invariant: Count of the same key in all elements of _order_ must be 
+                     equal to the length of key value in _container_  
         """
         if DEBUG:
             print "%s: init()" % (TAG);
@@ -148,13 +150,16 @@ class _Scope:
         
         # Current highest integer level
         self._level_ = 0.;
-        
+    
+    @staticmethod    
     def inject(self, obj, session, transfer = False):
         """
         Push values into scope
+        @attention: inject couldn't be static method cause applied to the object 
+                    but not to the class  
         @param obj: dictionary of key-values needed to create other element
         @param session: should be null, present just respective to parent class
-        @param level: level of current scope amendment   
+        @param transfer: use True to let values be saved on half level down   
         """
         if DEBUG:
             print "%s: inject()" % (TAG);
@@ -174,8 +179,12 @@ class _Scope:
             # before we get value we need to be sure what it's already value 
             # but not a search criteria
             for injector in injectors:
-                value = injector.find(obj[key]);
-                
+                if injector.check(key):
+                    value = injector.find(obj[key]);
+
+            if value == None:
+                value = obj[key];
+                    
             if value:
                 if not self._container_.has_key(key):
                     self._container_[key] = [];
@@ -184,7 +193,16 @@ class _Scope:
                     print "%s: + [level: %i] %s = %s" % (TAG, level, 
                                                          str(key), 
                                                          str(value));
-                self._container_[key].append(value);
+                                        
+                if key in self._order_[level]:
+                    last = len(self._container_[key])-1;
+                    if type(self._container_[key][last]) == type([]):
+                        self._container_[key][last].append(value)
+                    else:
+                        previous_value = self._container_[key].pop();
+                        self._container_[key].append([previous_value, value]);
+                else:
+                    self._container_[key].append(value);
         
         return session, {}, {};
     
