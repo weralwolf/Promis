@@ -114,6 +114,11 @@ class Session(Base, InjectiveTable):
     
     @staticmethod
     def find(options, session):
+        """
+        Find object id on different options
+        @param options: value of same parameter of Session which id should be known 
+        @param session: session of connection to db   
+        """
         collector = session.query(Session.id);
         
         collected = [];

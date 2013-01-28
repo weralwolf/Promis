@@ -135,17 +135,31 @@ class _Scope:
         """
         if DEBUG:
             print "%s: init()" % (TAG);
-        # Dictionary of lists of values which is ordered by levels.
-        # Dictionary keys is a names of scope values
+        # _container_ dictionary of lists of values which is ordered by levels.
+        # Data of the same level are placed in the same internal list.
+        # Dictionary keys is a names of scope values:
+        # {"key1": [data_level_1, data_level_2, ...],
+        #  "key2": [data_level_1, [data_level_5,data_of_the_same_level1,data_of_the_same_level2, ...],...] 
+        # For example: _container_ = {"satellite": ["Variant"],
+        #                             "parameter": ["electric field", "current density"],
+        #                             "session_id": [12, 7686],
+        #                             "measurement_point_id":[1, [10,11,12,13]],
+        #                             "measurement": [23.232, [1.005, 1.010, 1.045. 2.001]}
         self._container_ = {};
         
-        # Dictionary of lists of levels of penetration ordered by levels
-        # Lists contains keys which was overwritten/added on each level
+        # _order_ dictionary of lists of scope values names of penetration ordered by levels
+        # Lists contains keys which was overwritten/added on each level:
+        #     {level1:[key1, key3, ...],
+        #      level2:[key2, key3, ...],
+        #      level1.5:[key3, key4, key5, ...]}
         # Levels could be integer and half-integer.
         # Integer level indicates `scope` element injection, literally then
         #     we met a user manually-registered element
         # Half-integer level indicates non-direct injections as a result of
         #     pushing some elements into data base
+        # For example: _order_ = {1: ["satellite", "parameter", ...],
+        #                         2: ["channels", "parameter", "sessoin_id"]
+        #                         1.5: ["session_id", "measurement_point_id"]
         self._order_ = {};
         
         # Current highest integer level
