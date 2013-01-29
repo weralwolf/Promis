@@ -164,6 +164,10 @@ class _Scope:
         
         # Current highest integer level
         self._level_ = 0.;
+        
+        # _counters_ is a dictionary of counters of value of one level data.
+        #  Dictionary keys is a names of scope values
+        self._counters_ = {};
     
     @staticmethod    
     def inject(self, obj, session, transfer = False):
@@ -182,12 +186,15 @@ class _Scope:
         
         if (transfer):
             level -= 0.5;
+            
+        # Adding level to _order_ without value. 
+        # Value of this level will be added below, because information of 
+        # level existing before this injection will be needed in next "if" 
+        # (when _container_ will be filled)
+        if not self._order_.has_key(level):
+            self._order_[level] = [];
         
-        if self._order_.has_key(level):
-            self._order_[level].extend(obj.keys());
-        else:
-            self._order_[level] = obj.keys();
-
+        # Adding obj values to _container_ 
         for key in obj.keys():
             value = None;
             # before we get value we need to be sure what it's already value 
@@ -198,7 +205,7 @@ class _Scope:
 
             if value == None:
                 value = obj[key];
-                    
+              
             if value:
                 if not self._container_.has_key(key):
                     self._container_[key] = [];
@@ -217,6 +224,15 @@ class _Scope:
                         self._container_[key].append([previous_value, value]);
                 else:
                     self._container_[key].append(value);
+        
+            # Definition state of counter and corresponded its increasing     
+            if not self._counter_.has_key(key):
+                self._counters_[key] = 0;
+            elif (key in self._order_[level]):
+                self._counters_[key] += 1;
+                
+        # Adding obj keys as values to current level in _order_ dictionary            
+        self._order_[level].extend(obj.keys());
         
         return session, {}, {};
     
@@ -262,11 +278,12 @@ class _Scope:
                     if DEBUG:
                         print "%s: - [level: %i] %s" % (TAG, self._level_, str(key));
                     self._container_[str(key)].pop();
+                    self._counters_.pop(str(key));
                 
                     
             del self._order_[i];
             
-            self._level_ = self._level_ - 1.;
+            #self._level_ = self._level_ - 1.;
     
     def state(self):
         """
@@ -278,7 +295,7 @@ class _Scope:
         if len(self._order_):
             for key in self._container_.keys():
                 state[key] = self._container_[key][len(self._container_[key]) - 1];
-        
+          
         return state;
 
     def level(self):

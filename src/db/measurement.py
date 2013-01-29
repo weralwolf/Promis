@@ -78,10 +78,14 @@ class Measurement(Base, InjectiveTable):
         if DEBUG:
             print "%s: current scope %s" % (TAG, str(scope));    
         
-        if scope.has_key("measurement_point_id"):
-            toBePushed.measurement_points_id = scope["measurement_point_id"]
-        else:
-            errors["measurement_point_id"] = "Measurement point for Measurement couldn't have Null value, please check it";
+#        if scope.has_key("measurement_point_id"):
+#            counter = scope["counters"]["measurement_point_id"]
+#            if counter == 0:
+#                toBePushed.measurement_points_id = scope["measurement_point_id"]
+#            else:
+#                toBePushed.measurement_points_id = scope["measurement_point_id"][counter]
+#        else:
+#            errors["measurement_point_id"] = "Measurement point for Measurement couldn't have Null value, please check it";
             
         return {};   
     
