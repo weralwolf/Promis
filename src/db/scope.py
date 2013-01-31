@@ -165,9 +165,8 @@ class _Scope:
         # Current highest integer level
         self._level_ = 0.;
         
-        # _counters_ is a dictionary of counters of value of one level data.
-        #  Dictionary keys is a names of scope values
-        self._counters_ = {};
+        # Counter for value in list of value of some parameter (namely for Measurements)
+        self._counter_ = 0;
     
     @staticmethod    
     def inject(self, obj, session, transfer = False):
@@ -225,12 +224,6 @@ class _Scope:
                 else:
                     self._container_[key].append(value);
         
-            # Definition state of counter and corresponded its increasing     
-            if not self._counter_.has_key(key):
-                self._counters_[key] = 0;
-            elif (key in self._order_[level]):
-                self._counters_[key] += 1;
-                
         # Adding obj keys as values to current level in _order_ dictionary            
         self._order_[level].extend(obj.keys());
         
@@ -278,23 +271,31 @@ class _Scope:
                     if DEBUG:
                         print "%s: - [level: %i] %s" % (TAG, self._level_, str(key));
                     self._container_[str(key)].pop();
-                    self._counters_.pop(str(key));
+                    self._counter_ = 0;
                 
                     
             del self._order_[i];
             
             #self._level_ = self._level_ - 1.;
     
-    def state(self):
+    def state(self, count_flag = False):
         """
         Calculate current state of scope from all last added data
         @return: dictionary of key:value
+        @param count_flag: if True, perform counting for value in list
         """
+             
         state = {};
         
         if len(self._order_):
             for key in self._container_.keys():
-                state[key] = self._container_[key][len(self._container_[key]) - 1];
+                last = len(self._container_[key]) - 1;
+                if count_flag and type(self._container_[key][last]) == type([]):
+                    state[key] = self._container_[key][last][self._counter_];
+                state[key] = self._container_[key][last];
+        
+        if count_flag == True:
+            self._counter_ += 1 
           
         return state;
 

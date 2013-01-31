@@ -19,9 +19,9 @@ class Measurement(Base, InjectiveTable):
     `parameters_title` VARCHAR(255) NOT NULL ,
     `channels_title` VARCHAR(45) NOT NULL ,
     `measurement_points_id` INT(10) UNSIGNED NOT NULL ,
-    `marker` INT(10) UNSIGNED NOT NULL ,
+    `level_marker` INT(10) UNSIGNED NOT NULL ,
     `measurement` BLOB NOT NULL ,
-    `rError` VARCHAR(255) NULL ,         # This means relative error                         
+    `relative_error` VARCHAR(255) NULL ,                             
     PRIMARY KEY (`id`, `parameters_title`, `parameters_units_title`) ,
     INDEX `measurement_points_id` (`measurement_points_id` ASC) ,       
     INDEX `fk_measurements_parameters1` (`parameters_title` ASC) , 
@@ -38,19 +38,19 @@ class Measurement(Base, InjectiveTable):
     """
     __tablename__ = 'measurements';
     
-    __defaults__ = {'marker': None, 'measurement': None, 'relative_error': None};     
+    __defaults__ = {'level_marker': None, 'measurement': None, 'relative_error': None};     
     
     id = Column(Integer(10, Unsigned=True), primary_key=True);
     parameters_title = Column(String(255), ForeignKey('parameters.title'));
     channels_title = Column(String(255), ForeignKey('channles.title'));
     measurement_points_id = Column(Integer(10, Unsigned=True), ForeignKey('measurement_points.id'));
-    marker = Column(Integer(10));
+    level_marker = Column(Integer(10));
     measurement = Column(LargeBinary);
-    relative_error = Column('rError', LargeBinary);
+    relative_error = Column('relative_error', LargeBinary);
 
-    def __init__(self, measurement, marker=0, relative_error=None):
+    def __init__(self, measurement, level_marker = 0, relative_error = None):
         self.measurement = measurement;
-        self.marker = marker;
+        self.level_marker = level_marker;
         self.relative_error = relative_error;
             
     @staticmethod
@@ -70,7 +70,7 @@ class Measurement(Base, InjectiveTable):
         if (preset['measurement'] == None):
             errors['measurement'] = "Measurement couldn't have Null value, please check it";
             
-        toBePushed = Measurement(preset['measurement'], preset['marker'], preset["relative_error"]);
+        toBePushed = Measurement(preset['measurement'], preset['level_marker'], preset["relative_error"]);
        
         # Perform connection measurement with measurement_point, parameter and channel
         scope = Scope.state(); 
@@ -78,16 +78,25 @@ class Measurement(Base, InjectiveTable):
         if DEBUG:
             print "%s: current scope %s" % (TAG, str(scope));    
         
-#        if scope.has_key("measurement_point_id"):
-#            counter = scope["counters"]["measurement_point_id"]
-#            if counter == 0:
-#                toBePushed.measurement_points_id = scope["measurement_point_id"]
-#            else:
-#                toBePushed.measurement_points_id = scope["measurement_point_id"][counter]
-#        else:
-#            errors["measurement_point_id"] = "Measurement point for Measurement couldn't have Null value, please check it";
+        if scope.has_key("measurement_point_id"):
+            toBePushed.measurement_points_id = scope["measurement_point_id"]
+        else:
+            errors["measurement_point_id"] = "Measurement point for Measurement couldn't have Null value, please check it";
+        
+        if (len(errors)):
+            return session, obj, errors;
+        
+        session.add(toBePushed);
+        session.flush();
+        
+        if DEBUG:
+            print "%s: %s" % (TAG, toBePushed);
+        
+        for i in Measurement.__defaults__.keys():
+            if i in obj.keys():
+                del obj[i];
             
-        return {};   
+        return session, obj, {};   
     
     @staticmethod
     def tableName():

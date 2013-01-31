@@ -86,17 +86,17 @@ class Session(Base, InjectiveTable):
     """`sessions`
 
     `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
-    `iBegin` TIMESTAMP NOT NULL ,
-    `iEnd` TIMESTAMP NOT NULL ,
+    `time_begin` TIMESTAMP NOT NULL ,
+    `time_end` TIMESTAMP NOT NULL ,
     PRIMARY KEY (`id`)
     """
     __tablename__ = "sessions";
     
-    __defaults__ = { "iBegin": None, "iEnd": None, };
+    __defaults__ = { "time_begin": None, "time_end": None, };
     
     id = Column(Integer(10, Unsigned=True), primary_key=True);
-    interval_begin = Column("iBegin", DateTime);
-    interval_end = Column("iEnd", DateTime);
+    interval_begin = Column("time_begin", DateTime);
+    interval_end = Column("time_end", DateTime);
     
     def __init__(self, interval_begin, interval_end):
         self.interval_begin = interval_begin;
@@ -136,7 +136,7 @@ class Session(Base, InjectiveTable):
                     operator = splited[1];
                      
                     if (key in Session.__defaults__.keys()):
-                        if (key == "iBegin"):
+                        if (key == "time_begin"):
                             if (operator == "eq"):
                                 collector = collector.filter(Session.interval_begin == options[i]);
                             if (operator == "lt"):
@@ -144,7 +144,7 @@ class Session(Base, InjectiveTable):
                             if (operator == "gt"):
                                 collector = collector.filter(Session.interval_begin > options[i]);
 
-                        if (key == "iEnd"):
+                        if (key == "time_end"):
                             if (operator == "eq"):
                                 collector = collector.filter(Session.interval_end == options[i]);
                             if (operator == "lt"):
@@ -175,17 +175,17 @@ class Session(Base, InjectiveTable):
         preset.update(obj);           
         
         # Perform errors check
-        if (preset["iBegin"] == None):    
-            errors["iBegin"] = "iBegine couldn't have zero value, please check it";
+        if (preset["time_begin"] == None):    
+            errors["time_begin"] = "time_begin couldn't have zero value, please check it";
             
-        if (preset["iEnd"] == None):      
-            errors["iEnd"] = "iEnd couldn't have zero value, please check it";
+        if (preset["time_end"] == None):      
+            errors["time_end"] = "time_end couldn't have zero value, please check it";
             
         if (len(errors)):
             return session, obj, errors;
         
         # Create session element
-        toBePushed = Session(obj["iBegin"], obj["iEnd"]);  
+        toBePushed = Session(obj["time_begin"], obj["time_end"]);  
         
         # Connect session with channels, there rules we are working with
         # 1. Scope object controls correctness of all information it contains

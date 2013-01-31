@@ -93,6 +93,10 @@ class MeasurementPoint(Base, InjectiveTable):
 
         if DEBUG:
             print "%s: %s" % (TAG, toBePushed);
+            
+        for i in MeasurementPoint.__defaults__.keys():
+            if i in obj.keys():
+                del obj[i];
         
         return session, obj, {};                            
  

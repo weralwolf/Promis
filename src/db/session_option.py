@@ -21,7 +21,7 @@ class SessionOption(Base, InjectiveTable):
     `id` INT(10) NOT NULL AUTO_INCREMENT ,
     `sessions_id` INT(10) UNSIGNED NOT NULL ,
     `title` VARCHAR(255) NOT NULL ,
-    `value` VARCHAR(255) NULL ,
+    `sessions_options_value` VARCHAR(255) NULL ,
     PRIMARY KEY (`id`) ,
     INDEX `sessions_id` (`sessions_id` ASC) ,
     CONSTRAINT `sessions_options_ibfk_1`
@@ -30,11 +30,11 @@ class SessionOption(Base, InjectiveTable):
     """
     __tablename__ = 'session_options';
     
-    __defaults__ = { 'sessions_id': None, 'title': None, 'value': None, }; 
+    __defaults__ = { 'sessions_id': None, 'title': None, 'sessions_options_value': None, }; 
     
     id = Column(Integer(10, Unsigned=True), primary_key=True);
     title = Column(String(255));
-    value = Column(String(255));
+    value = Column('sessions_options_value', String(255));
     sessions_id = Column(Integer(10, Unsigned=True), ForeignKey('sessions.id'));
     
     def __init__(self, title, value=None):
@@ -68,7 +68,7 @@ class SessionOption(Base, InjectiveTable):
             errors['title'] = "Session option title couldn't have zero value, please check it";
         
         # Create session option element
-        toBePushed = SessionOption(preset['title'], preset['value']);
+        toBePushed = SessionOption(preset['title'], preset['sessions_options_value']);
         
         # Perform connection session option with session into 'session_id' field
         scope = Scope.state();
@@ -89,6 +89,10 @@ class SessionOption(Base, InjectiveTable):
         
         if DEBUG:
             print "%s: %s" % (TAG, toBePushed);
+        
+        for i in SessionOption.__defaults__.keys():
+            if i in obj.keys():
+                del obj[i];
         
         return session, obj, {};   
     
