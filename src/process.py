@@ -8,7 +8,10 @@ from db.connection import DBConnection
 
 import conf.db as db
 from conf.local import DEBUG
-from db.injectors import injectors
+
+from db import Session, SessionOption, MeasurementPoint, Measurement, Scope
+
+injectors = [Session, SessionOption, MeasurementPoint, Measurement, Scope];
 
 TAG = "process"
 
@@ -22,6 +25,8 @@ __connection__ = DBConnection(
                               __db_conf__['host'],
                               __db_conf__['driver']
                               );
+
+Scope.put_injectors(injectors);
 
 def process(key, obj, session=None):
     '''

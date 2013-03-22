@@ -10,7 +10,6 @@ from common import Singleton
 
 from math import floor
 
-from db.injectors import injectors
 """
     @todo: create methods pushLevel, pullLevel to automate scope work, delegated
            to next release cause of over-engineering fear
@@ -167,6 +166,10 @@ class _Scope:
         
         # Counter for value in list of value of some parameter (namely for Measurements)
         self._counter_ = 0;
+        self._injectors_ = [];
+        
+    def put_injectors(self, injectors):
+        self._injectors_ = injectors
     
     @staticmethod    
     def inject(self, obj, session, transfer = False):
@@ -198,7 +201,7 @@ class _Scope:
             value = None;
             # before we get value we need to be sure what it's already value 
             # but not a search criteria
-            for injector in injectors:
+            for injector in self._injectors_:
                 if injector.check(key):
                     value = injector.find(obj[key]);
 
